@@ -537,7 +537,7 @@ server.on("/mang_didong", []() {
         case 0:  id_check = "HC2";break;
         case 1:  id_check = "HCL";break;
       }
-      if (atoi(WiFiConf.choose_HC) != i)
+      if (atoi(WiFiConf.choose_hc) != i)
       content1 += "<option value=\"" + String(i) + "\">" +  id_check + "</option>";
       else
       content1 += "<option value=\"" + String(i) + "\" selected>" +  id_check + "</option>";
@@ -585,7 +585,7 @@ server.on("/mang_didong", []() {
   });
   server.on("/set_hc2_conf", []() {
     String data1 = server.arg(F("button"));
-    data1.toCharArray(WiFiConf.sta_DHCP, sizeof(WiFiConf.choose_hc));
+    data1.toCharArray(WiFiConf.choose_hc, sizeof(WiFiConf.choose_hc));
     String new_IPHC = server.arg("iphc2");
     String new_userhc = server.arg("userhc2");
     String new_pwdhc = server.arg("pwdhc2");
@@ -813,6 +813,7 @@ void parseBytes1(const char* str, char sep, int address, int maxBytes, int base)
 //Set Varuable toi HC2 ////////////////////
 //////////////////////////////////////////
 void SetVariHC(String vari,String giatri) {
+  if (atoi(WiFiConf.choose_hc) == 0){
       HTTPClient http;
       http.begin("http://" + String(WiFiConf.sta_iphc2) + "/api/globalVariables/"+vari);
       char* user=WiFiConf.sta_userhc;
@@ -822,8 +823,10 @@ void SetVariHC(String vari,String giatri) {
       http.PUT("{\"value\":\"" + giatri + "\",\"invokeScenes\":true}");
      // http.writeToStream(&Serial);
       http.end();
+  }
 }
 void SetVariHC2Save(String vari,String giatri) { // Theo ma hoa
+  if (atoi(WiFiConf.choose_hc) == 0){
       int vitricat=0;    
       char tamchar[128];
       sprintf(tamchar, "%s:%s|", WiFiConf.sta_userhc, WiFiConf.sta_passhc);
@@ -843,11 +846,13 @@ void SetVariHC2Save(String vari,String giatri) { // Theo ma hoa
       http.PUT("{\"value\":\"" + giatri + "\",\"invokeScenes\":true}");
       http.writeToStream(&Serial);
       http.end();
+  }
 }
 ////////////////////////////////////
 //Get thông số Hc2 /////////
 //////////////////////////////////
 void getHC() {
+  if (atoi(WiFiConf.choose_hc) == 0){
   WiFiClient client;
   if (!client.connect(WiFiConf.sta_iphc2,80)) {  
      SerialHC2=F("connection failed");      
@@ -877,5 +882,6 @@ void getHC() {
       line.remove(76);
       SerialHC2=line;}
     
+  }
   }
 }
