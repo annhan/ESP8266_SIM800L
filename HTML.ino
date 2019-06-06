@@ -308,22 +308,14 @@ server.on("/sdt_conf", []() {
     if (new_SDT2==""){new_SDT2="x";}
     if (new_SDT3==""){new_SDT3="x";}
     if (new_SDT4==""){new_SDT4="x";}
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
       new_SDT1.toCharArray(WiFiConf.sta_SDT1, sizeof(WiFiConf.sta_SDT1));
       new_SDT2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
       new_SDT3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
       new_SDT4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
       saveWiFiConf();
-      content += F("<p>saved '");
-      content += WiFiConf.sta_ssid;
-      content += F("'... Thiết bị đang khởi động lại</p>");
-      content += F("<body></html>");
 
-    server.send(200, "text/html", content);
+
+    server.send(200, "text/html", "OK-Reboot");
     delay(500);
     ESP.reset();
   });
@@ -373,75 +365,40 @@ server.on("/sdt_conf", []() {
 server.on("/set_ktk", []() {
     noidung = server.arg("text");
     guitinnhan=3;
-   String content = "" ; //FPSTR(header); content += FPSTR(begin_title);
-   //content += WiFiConf.module_id;
-    //content += F(".local - set WiFi");
-  //  content += F("</title></head><body>");
-    content += F("ok");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "ok");
   });
 server.on("/set_noidung", []() {
     noidung = server.arg("text");
     guitinnhan=1;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>ok</h1>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "ok");
   });
   server.on("/set_noidung1", []() {
     noidung = server.arg("text");
     String new_phone = server.arg("newphone");
     new_phone.toCharArray(sdt_new, sizeof(sdt_new));
     guitinnhan=7;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>ok</h1>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "OK");
   });
   server.on("/set_rsSim", []() {  
     guitinnhan=4;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
-    server.send(200, "text/html", content);   
+    server.send(200, "text/html", "OK");   
   });
   server.on("/set_call", []() {
    // noidung = server.arg("text");
     guitinnhan=2;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "OK");
   });
   server.on("/set_call2", []() {
     String new_phone = server.arg("newphone");
     new_phone.toCharArray(sdt_new, sizeof(sdt_new));
     guitinnhan=8;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "OK");
   });
  server.on("/set_naptk", []() {
     manapthe = server.arg("Recharge");
     manapthe.trim();
     guitinnhan=5;
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "OK");
   });
 //////////////
   server.on("/set_wifi_conf", []() {
@@ -451,11 +408,6 @@ server.on("/set_noidung", []() {
     String new_gateway = server.arg("gateway");
     String new_subnet = server.arg("subnet");
     
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title></head><body>");
-    content += F("<h1>Set WiFi of ESP8266</h1>");
     if (new_ssid.length() > 0) {
       new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
       new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
@@ -464,16 +416,11 @@ server.on("/set_noidung", []() {
       new_subnet.toCharArray(WiFiConf.sta_subnet, sizeof(WiFiConf.sta_subnet));
 
       saveWiFiConf();
-      content += F("<p>saved '");
-      content += WiFiConf.sta_ssid;
-      content += F("'... Thiết bị đang khởi động lại</p>");
-      content += F("<body></html>");
+      server.send(200, "text/html", "OK");
     } else {
-      content += F("<p>Empty SSID is not acceptable. </p>");
-      content += F("<body></html>");
-      Serial.println(F("Rejected empty SSID."));
+      server.send(200, "text/html", "Not OK");
     }
-    server.send(200, "text/html", content);
+    delay(1000);
     ESP.reset();
   });
 
@@ -504,25 +451,15 @@ server.on("/set_noidung", []() {
   });
 
   server.on("/set_module_id", []() {
-    String new_id = server.arg("module_id");
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("<title>");
-    content += WiFiConf.module_id;
-    content += F(".local - set WiFi");
-    content += F("</title>");
-    content += F("</head><body>");
+    String new_id = server.arg("module_id");;
     if (new_id.length() > 0) {
       new_id.toCharArray(WiFiConf.module_id, sizeof(WiFiConf.module_id));
     } else {
       resetModuleId();
     }
     saveWiFiConf();
-    content += F("<h1>Set WiFi of ESP8266</h1>");
-    content += F("<p>Set Module ID to '");
-    content += WiFiConf.module_id;
-    content += F("' ... Reseting. </p>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);
+    server.send(200, "text/html", "OK");
+    delay(1000);
     ESP.reset();
   });
   server.on("/Reboot", HTTP_GET, []() {
@@ -575,34 +512,14 @@ server.on("/mang_didong", []() {
   server.on("/set_mang_didong", []() {
     String new_naptk = server.arg("manap");
     String new_makttk = server.arg("makttk");
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - Wifi Setup");
-    content += F("</title></head><body>");
-    content += F("<h1>Lưu Wifi</h1>");
       new_naptk.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
       new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
       saveWiFiConf();
-      content += F("<p>Save '");
-      content += WiFiConf.sta_ssid;
-      content += F("' ...  device Rebooting !</p>");
-    content += F("<body></html>");
-    server.send(200, F("text/html"), content);
+    server.send(200, F("text/html"), "OK");
   });
 
   
   server.on("/hc2_conf", []() {    
-    /*  int vitricat=0;
-      char tamchar[128];
-     sprintf(tamchar, "%s:%s|", WiFiConf.sta_userhc, WiFiConf.sta_passhc);
-      for (byte tam=0;tam<sizeof(tamchar);tam++){
-            if (tamchar[tam]=='|'){
-                  vitricat=tam;
-                  break;
-            }
-      }
-      int encodedLen = base64_enc_len(vitricat-1);
-      char encoded[encodedLen];
-      base64_encode(encoded, tamchar, vitricat);*/
     String content = FPSTR(header); content += FPSTR(begin_title);
     String    content1 = ipStr;
     content1 += F(" ( ");
@@ -611,7 +528,22 @@ server.on("/mang_didong", []() {
     content1 += F(" )</p>");
     content1 += F("<p>");
     content1 += F("</p><form method='get' action='set_hc2_conf'>");
+    content1 += F("<div class=\"row\">");
+    content1 += "<li><select name='button' class=\"dropbtn\" >";
+    String id_check="";
     
+    for (int i = 0; i < 2; i++) {
+      switch (i) {
+        case 0:  id_check = "HC2";break;
+        case 1:  id_check = "HCL";break;
+      }
+      if (atoi(WiFiConf.choose_HC) != i)
+      content1 += "<option value=\"" + String(i) + "\">" +  id_check + "</option>";
+      else
+      content1 += "<option value=\"" + String(i) + "\" selected>" +  id_check + "</option>";
+    }
+    content1 += "</select>";
+    content1 += F("</div>");
     content1 += F("<li><label for='iphc2' class=\"req\">IP HC2:</label><input name='iphc2' class=\"txt\" id='iphc2' maxlength=32 value=");
     content1 += String(WiFiConf.sta_iphc2);
     content1 += F(" ><br /><br />");
@@ -648,21 +580,18 @@ server.on("/mang_didong", []() {
         content += F("<li>Global1 - Trang Thai ON,OFF,OK");
         content += F("<li>SIM_DTMF - Status DTMF");
         content += F("<li>SIM_CALL - Phone number quitclaim calling");
-    //content += encoded;
      content += F("</body></html>");
     server.send(200, F("text/html"), content);
   });
   server.on("/set_hc2_conf", []() {
+    String data1 = server.arg(F("button"));
+    data1.toCharArray(WiFiConf.sta_DHCP, sizeof(WiFiConf.choose_hc));
     String new_IPHC = server.arg("iphc2");
     String new_userhc = server.arg("userhc2");
     String new_pwdhc = server.arg("pwdhc2");
     String new_global1 = server.arg("global1");
     String new_global2 = server.arg("global2");
     //String new_global3 = server.arg("global3");
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - Wifi Setup");
-    content += F("</title></head><body>");
-    content += F("<h1>Lưu Wifi</h1>");
     if (new_IPHC.length() > 0) {
       
       new_IPHC.toCharArray(WiFiConf.sta_iphc2, sizeof(WiFiConf.sta_iphc2));
@@ -671,60 +600,33 @@ server.on("/mang_didong", []() {
       new_global1.toCharArray(WiFiConf.sta_global1, sizeof(WiFiConf.sta_global1));
       new_global2.toCharArray(WiFiConf.sta_global2, sizeof(WiFiConf.sta_global2));
       saveWiFiConf();
-      content += F("<p>Save '");
-      content += WiFiConf.sta_ssid;
-      content += F("' ...  device Rebooting !</p>");
-      
-    } else {
-      content += F("<p>Rejected empty SSID.</p>");
-     //Serial.println("Rejected empty SSID.");
-    }
-    content += F("<body></html>");
-    server.send(200, F("text/html"), content);
+    } 
+    server.send(200, F("text/html"), "OK");
   });
   server.on("/getHC", []() {
-    
-    String content =  F("<!DOCTYPE HTML>\r\n<html><head><style>body {background-color:lightgrey}h1 {color:green}p {color:black}</style><link rel=\"shortcut icon\" href=\"data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAADLy8sAHYsbACCNGADK28UADIEHAHOubwAShQoA//7/AObz6ADn8+gA6fPoAOzz6ADGxsYAXa5eAL7gugAghxAAtbyyABFmCAD09vEAN5ctADuPMAA4ly0AxuG9AKvXqQA2lzYAJ4cZADuXNgAikCIAKIwoAHS1cwDs++YAAHgAAKrKpwAAewAAj8WQACCHEQDa6tgAtbyzAMTcwQA4jzEAOpEuAFCkSwAYZgkAa7JiAIK9ggBAmDoAQJY9AA6FDADQ5NAApMalAC2PKQCozagA9PXwAPT48AAvbScAF2YKAGywZgBtsGYA4+3iAMviywA/mDsARpgyAM/jzgBkkGEA0eXLAC6KJAA2dDMAotCgAEWbRAA5iiQAv9+6AKmr3AAQZQgA8vXxAPn48QA+mDMAsdayAJ7DngChxKEANnQ0ACiRKABlkGIAq7iqAAB3AAAAegAAjsSQAHm5eQDKycoAw9vBAGGxYgB/mqMAhJesAPr6+AC21qoA/v/+AJqamgBygMIASpxAAMjIyADv8PYAYLBgANrr1gCUx5EAZ61gAGitYADQy9EAKGpOACOPJAD7+/wAJI8kAPv9+QDo8OUA/v//AI24iQD///8AWaxVAC+MJABerFUAXaleAF6pXgB5tHUA2uvXAPX16wDPys8AxOLGANHL0gAnhB8Agr1+AJqh1AAOfAgAzOHMAIe+gQCLvoEA6O7pAHK0bQCrt6oAMI4iAC6QKAAtlCsAS5s/AF+rXAB4t3YAwdrBAMrIygDv+e8A3O3eAM/K0ADf4uoAdJdxAHWXcQAniBoAbqtuAP3+9QAMhgwAoc6fAHO0bgAvjiMAFYYMAI28jgBGn0MAyMfIAGOrXQB4uHoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAyPe4c/NhEqT5QlaaAAX3JyXiITc5oWDmYpS11ycgByXIw8ZXJycnJycnxFg3JiclZESXJycnJycnJyOkEXfSScCXIvG1BtbW1rnYVAPRB4m3JyGgRxMU1OnoFycimVLlhycllTjXJycpAccnJmQpYLcnJkHx8zcnIeAnJyRjcPenJyDVNUBnJjgGBHchZIFDAHIAEoHWxyk1tqWnJDNjmDcm+KdCxycm4FK5hydVE7MhJyl34hGAeff3JyeRVScndoB3JyjpkfTHJyNC1VknIKYWcScnKRA3JyCIuhcFdycgl2iYQ+SjUmhoiiXHIMcnJycoI4JyMZLngkcnJyDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"/><meta charset='UTF-8'><title>");
-    content += F("Wait");
     getHC();
-    server.send(200, F("text/html"), content);
+    server.send(200, F("text/html"), "OK");
   });
   server.on("/set_language", []() {
     String new_language = server.arg("language");
     
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - Language");
-    content += F("</title></head><body>");
-    content += F("<h1>Save</h1>");
-    content += F("<p>OK '");
-    if (new_language =="Vietnamese") {String lan="1";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));content += "VN";}
+    if (new_language =="Vietnamese") {String lan="1";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));}
     else
-      {String lan="0";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));content += "EN";}
+      {String lan="0";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));}
       
       saveWiFiConf();
-      content += F("' ... Device Reboot !</p>");
-      content += F("<body></html>");
-    server.send(200, F("text/html"), content);
+ 
+    server.send(200, F("text/html"), "OK");
+    delay(1000);
     ESP.reset();
   });
   server.on("/set_Reset", HTTP_GET, []() {
+    server.send(200, F("text/html"), "OK-Reboot");
         ESP.reset();
   });
    server.on("/Reset1", HTTP_GET, []() {
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - Reset");
-    content += F("</title></head><body>");
-    content += F("<h1>Thông Tin :</h1>");
-    content += F("<p>Cty : TNHH Kim Sơn Tiến ");
-    content += F("</br>Địa chỉ : 65/39 Đường 339 Phường Tăng Nhơn Phú B,Q9,TP.HCM");
-    content += F("</br>Phát Triển : Phạm An Nhàn");
-    content += F("</p>");
-    content += F("<p>");
-    content += F("<form method='get' action='set_Reset1'>");
-    content += F("<input type='submit'  id=\"submitbtn\" value='Reset' onclick='return confirm(\"Tiếp Tục ?\");'></form>");
-    content += F("</p>");
-    content += F("</body></html>");
-    server.send(200, F("text/html"), content);
+
+    server.send(200, F("text/html"), "K");
   });
   server.on("/set_Reset1", HTTP_GET, []() {
         String new_IPHC = "192.168.1.10";
@@ -869,8 +771,8 @@ void setupWeb(void) {
     content +=F("</fieldset>");
     content +=F("<fieldset>");
     content +=F("<legend style =\"color: red;  font-size : 150%;align: Center\">Information</legend>");
-    content += F("<li>Copyright © Kim Son Tien Co.Ltd - mHome");
-    content += F("<li>www.nhathongminhmhome.com");
+    content += F("<li>");
+    content += F("<li>");
     content += F("<li>Designed by mHome - R&D Department");
     content += F("<li>Made in VietNam");
     

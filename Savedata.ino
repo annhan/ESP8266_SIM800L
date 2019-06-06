@@ -1,16 +1,16 @@
 void connect_wifi(){
   
-  boolean kq=scanWiFireturn();
-  if (kq){
+ // boolean kq=scanWiFireturn();
+//  if (kq){
    //  WiFi.begin("mHomeRD", "123789456");
           WiFi.begin(WiFiConf.sta_ssid, WiFiConf.sta_pwd);
           parseBytes1(WiFiConf.sta_ip, '.', 1, 4, 10);
           parseBytes1(WiFiConf.sta_gateway, '.', 2, 4, 10);
           parseBytes1(WiFiConf.sta_subnet, '.', 3, 4, 10);
           WiFi.config(ip10,gateway10,subnet10,DNS);
-          DEBUG_PRINTLN(WiFiConf.sta_ip);
-          DEBUG_PRINTLN(WiFiConf.sta_ssid);
- }
+        //  DEBUG_PRINTLN(WiFiConf.sta_ip);
+       //   DEBUG_PRINTLN(WiFiConf.sta_ssid);
+ //}
 
 }
 boolean scanWiFireturn(void) {

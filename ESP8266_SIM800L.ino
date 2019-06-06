@@ -34,6 +34,24 @@ void blink_led(int thoigian) {
   delay(thoigian);
   digitalWrite(status_led, LOW);
 }
+/*void eventWiFi(WiFiEvent_t event) {
+     
+  switch(event) {
+    case WIFI_EVENT_STAMODE_CONNECTED:
+        digitalWrite(status_led, LOW);
+          statusmang = 1;
+          cho = 0;
+          limit_connect = 0;
+        Serial.println("WIFI_EVENT_STAMODE_CONNECTED");
+    break;
+        
+    case WIFI_EVENT_STAMODE_DISCONNECTED:
+          statusmang = 0;
+    Serial.println("WIFI_EVENT_STAMODE_DISCONNECTED");
+         break;
+  }
+  
+}*/
 void setup() {
   //wdt_disable();
   pinMode(PIN_CONFIG, INPUT);
@@ -52,6 +70,7 @@ void setup() {
   }
   EEPROM.begin(1024);
   delay(10);
+ // if ( config_status == 0 ) {WiFi.onEvent(eventWiFi); }
   if (!loadWiFiConf()) {
     resetModuleId();
     saveWiFiConf();
@@ -115,11 +134,11 @@ void loop() {
           statusmang = 0;
           timeled = millis();
         }
-        if (limit_connect > 3) {
+        if (limit_connect > 5) {
           ESP.reset();
         }
-        if (cho >= 50) {
-          connect_wifi();
+        if (cho - 55 == 0) {
+          //connect_wifi();
           limit_connect++;
           cho = 0;
         }

@@ -105,6 +105,7 @@ void receive_uart() {
                                 manap.trim();
                                 manap=manap+kt;
                                 manap=manap+"#";
+                                delay(1500);
                                 kttk(manap);                  
                   }
           }

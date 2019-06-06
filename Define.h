@@ -108,6 +108,7 @@ struct WiFiConfStruct {
   char sta_language[3];
   char sta_manap[10];
   char sta_makttk[10];
+  char choose_hc[4];
   char module_id[32];
 } WiFiConf = {
   WIFI_CONF_FORMAT,
@@ -128,6 +129,7 @@ struct WiFiConfStruct {
   "1",
   "*100*",
   "*101#",
+  "0",
   ""
 };
 ///////////////////////////////////////////
@@ -138,8 +140,8 @@ byte guisms[3]={0,0,0};
 // User pass Update ///////////////////
 //////////////////////////////////////
 const char* update_path = "/firmware";
-const char* update_username = "mhome";
-const char* update_password = "fibaro";
+const char* update_username = "mlab";
+const char* update_password = "300191";
 //////////////////////////////////////////
 // Bien Luu Time/////////////////////
 ////////////////////////////////////////
@@ -155,7 +157,7 @@ int thoigian_gio=0;
 
 byte x=0;
 int i=0;
-int cho=0;
+int cho=1;
 byte statusmang=0;
 byte statusnaptk=0;
 int config_status=0;
