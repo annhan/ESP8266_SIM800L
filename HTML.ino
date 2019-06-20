@@ -417,7 +417,18 @@ void setupWiFiConf(void) {
   });
   server.on("/Reset1", HTTP_GET, []() {
 
-    server.send(200, send_html, "OK");
+    String content = FPSTR(header); content += FPSTR(begin_title);
+    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+    content += F("Reset default");
+    content += FPSTR(title_html);
+    content += F("</br>");
+    content += F("</p>");
+    content += F("<p>");
+    content += F("<form method='get' action='set_Reset1'>");
+    content += F("<input type='submit'  id=\"submitbtn\" value='Reset' onclick='return confirm(\"Reset NOW ?\");'></form>");
+    content += F("</p>");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
   server.on("/set_Reset1", HTTP_GET, []() {
     String new_IPHC = "192.168.1.10";
@@ -459,7 +470,7 @@ void setupWiFiConf(void) {
     lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
     resetModuleId();
     saveWiFiConf();
-
+    server.send(200, send_html, "OK-Rebooting");
     ESP.reset();
   });
 }
