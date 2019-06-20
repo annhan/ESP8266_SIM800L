@@ -497,7 +497,7 @@ boolean end_cuocgoi(){
             }          
           }
          while((answer == 0) && ((millis() - previous) < 1000)); 
-         if      (strstr(response,"1") != NULL) {dtmf_sim=1;dtmf_sim=10;return true;}
+         if      (strstr(response,"1") != NULL) {sendAT((char *)"ATH",(char *)"OK",500);return true;}
         // else if (strstr(response,"2") != NULL) dtmf_sim=2;
         // else if (strstr(response,"3") != NULL) dtmf_sim=3;
          //else if (strstr(response,"4") != NULL) dtmf_sim=4;
