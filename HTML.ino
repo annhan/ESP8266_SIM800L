@@ -418,7 +418,7 @@ void setupWiFiConf(void) {
   server.on("/Reset1", HTTP_GET, []() {
 
     String content = FPSTR(header); content += FPSTR(begin_title);
-    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+  //  String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
     content += F("Reset default");
     content += FPSTR(title_html);
     content += F("</br>");
