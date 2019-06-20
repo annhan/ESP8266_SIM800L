@@ -1,199 +1,4 @@
-///////////////////////////////////////////////////////////////////////
-///Ham Chuyen doi user:password qua Base64 cho giao tiep qua mang///////
-////////////////////////////////////////////////////////////////////////
-const char PROGMEM b64_alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
 
-/* 'Private' declarations */
-void a3_to_a4(unsigned char * a4, unsigned char * a3);
-void a4_to_a3(unsigned char * a3, unsigned char * a4);
-unsigned char b64_lookup(char c);
-
-int base64_encode(char *output, char *input, int inputLen) {
-  int j = 0;
-  i = 0;
-  int encLen = 0;
-  unsigned char a3[3];
-  unsigned char a4[4];
-
-  while(inputLen--) {
-    a3[i++] = *(input++);
-    if(i == 3) {
-      a3_to_a4(a4, a3);
-
-      for(i = 0; i < 4; i++) {
-        output[encLen++] = pgm_read_byte(&b64_alphabet[a4[i]]);
-      }
-
-      i = 0;
-    }
-  }
-
-  if(i) {
-    for(j = i; j < 3; j++) {
-      a3[j] = '\0';
-    }
-
-    a3_to_a4(a4, a3);
-
-    for(j = 0; j < i + 1; j++) {
-      output[encLen++] = pgm_read_byte(&b64_alphabet[a4[j]]);
-    }
-
-    while((i++ < 3)) {
-      output[encLen++] = '=';
-    }
-  }
-  output[encLen] = '\0';
-  return encLen;
-}
-
-int base64_decode(char * output, char * input, int inputLen) {
-  int j = 0;
-  i = 0;
-  int decLen = 0;
-  unsigned char a3[3];
-  unsigned char a4[4];
-
-
-  while (inputLen--) {
-    if(*input == '=') {
-      break;
-    }
-
-    a4[i++] = *(input++);
-    if (i == 4) {
-      for (i = 0; i <4; i++) {
-        a4[i] = b64_lookup(a4[i]);
-      }
-
-      a4_to_a3(a3,a4);
-
-      for (i = 0; i < 3; i++) {
-        output[decLen++] = a3[i];
-      }
-      i = 0;
-    }
-  }
-
-  if (i) {
-    for (j = i; j < 4; j++) {
-      a4[j] = '\0';
-    }
-
-    for (j = 0; j <4; j++) {
-      a4[j] = b64_lookup(a4[j]);
-    }
-
-    a4_to_a3(a3,a4);
-
-    for (j = 0; j < i - 1; j++) {
-      output[decLen++] = a3[j];
-    }
-  }
-  output[decLen] = '\0';
-  return decLen;
-}
-
-int base64_enc_len(int plainLen) {
-  int n = plainLen;
-  return (n + 2 - ((n + 2) % 3)) / 3 * 4;
-}
-
-int base64_dec_len(char * input, int inputLen) {
-  i = 0;
-  int numEq = 0;
-  for(i = inputLen - 1; input[i] == '='; i--) {
-    numEq++;
-  }
-  return ((6 * inputLen) / 8) - numEq;
-}
-
-void a3_to_a4(unsigned char * a4, unsigned char * a3) {
-  a4[0] = (a3[0] & 0xfc) >> 2;
-  a4[1] = ((a3[0] & 0x03) << 4) + ((a3[1] & 0xf0) >> 4);
-  a4[2] = ((a3[1] & 0x0f) << 2) + ((a3[2] & 0xc0) >> 6);
-  a4[3] = (a3[2] & 0x3f);
-}
-
- void a4_to_a3(unsigned char * a3, unsigned char * a4) {
-  a3[0] = (a4[0] << 2) + ((a4[1] & 0x30) >> 4);
-  a3[1] = ((a4[1] & 0xf) << 4) + ((a4[2] & 0x3c) >> 2);
-  a3[2] = ((a4[2] & 0x3) << 6) + a4[3];
-}
-
-unsigned char b64_lookup(char c) {
-  if(c >='A' && c <='Z') return c - 'A';
-  if(c >='a' && c <='z') return c - 71;
-  if(c >='0' && c <='9') return c + 4;
-  if(c == '+') return 62;
-  if(c == '/') return 63;
-  return -1;
-}
-
-/////////////////////////////////////////////////////////////////////////
-void printWiFiConf(void) {
-  Serial.println(WiFiConf.sta_ssid);
-  Serial.println(WiFiConf.sta_ip);
-  Serial.println(WiFiConf.module_id);
-  //Serial.println(WiFiConf.sta_ssid);
- // Serial.println(WiFiConf.sta_ssid);
-}
-
-bool loadWiFiConf() {
-  if (EEPROM.read(WIFI_CONF_START + 0) == wifi_conf_format[0] &&
-      EEPROM.read(WIFI_CONF_START + 1) == wifi_conf_format[1] &&
-      EEPROM.read(WIFI_CONF_START + 2) == wifi_conf_format[2] &&
-      EEPROM.read(WIFI_CONF_START + 3) == wifi_conf_format[3])
-  {
-    for (unsigned int t = 0; t < sizeof(WiFiConf); t++) {
-      *((char*)&WiFiConf + t) = EEPROM.read(WIFI_CONF_START + t);
-    }
-    printWiFiConf();
-    return true;
-  } else {
-    return false;
-  }
-}
-////////////////////////////////////
-//Lưu thông số vào eeprom /////////
-//////////////////////////////////
-void saveWiFiConf(void) {
-  for (unsigned int t = 0; t < sizeof(WiFiConf); t++) {
-    EEPROM.write(WIFI_CONF_START + t, *((char*)&WiFiConf + t));
-  }
-  EEPROM.commit();
-  printWiFiConf();
-}
-void setDefaultModuleId(char* dst) {
-  uint8_t macAddr[WL_MAC_ADDR_LENGTH];
-  WiFi.macAddress(macAddr);
-  sprintf(dst, "%s%02x%02x", NAME_PREF, macAddr[WL_MAC_ADDR_LENGTH - 2], macAddr[WL_MAC_ADDR_LENGTH - 1]);
-}
-void resetModuleId(void) {
-  uint8_t macAddr[WL_MAC_ADDR_LENGTH];
-  WiFi.macAddress(macAddr);
-  setDefaultModuleId(WiFiConf.module_id);
-}
-////////////////////////////////////
-//do wifi /////////
-//////////////////////////////////
-void scanWiFi(void) {
-  int founds = WiFi.scanNetworks();
-  network_html = F("<ol>");
-  for (i = 0; i < founds; ++i)
-  {
-    network_html += F("<li>");
-    network_html += WiFi.SSID(i);
-    network_html += F(" (");
-    network_html += WiFi.RSSI(i);
-    network_html += F(")");
-    network_html += (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*";
-    network_html += F("</li>");
-  }
-  network_html += F("</ol>");
-}
 ////////////////////////////////////
 //chờ kết nối mạng /////////
 //////////////////////////////////
@@ -215,214 +20,209 @@ void printIP(void) {
 
 void setupWiFiConf(void) {
   server.on("/wifi_conf", []() {
-     String content = FPSTR(header); content += FPSTR(begin_title);
-     String   content1 = F("<p>Wifi Connected: ");
+    String content = FPSTR(header); content += FPSTR(begin_title);
+    String   content1 = F("<p>Wifi Connected: ");
     content1 += WiFiConf.sta_ssid;
-    content1 += F("</br>IP Address: ");
+    content1 += F("</br>IP: ");
     content1 += ipStr;
     content1 += F(" ( ");
     content1 += WiFiConf.module_id;
     content1 += F(".local");
     content1 += F(" )</p>");
     content1 += F("<p>");
-     content1 += F("</p><form method='get' action='set_wifi_conf'>");
+    content1 += F("</p><form method='get' action='set_wifi_conf'>");
     content1 += F("<li><label for='ssid' class=\"req\">SSID : </label><input name='ssid' class=\"txt\" id='ssid' maxlength=32 value=") ;
     content1 += String(WiFiConf.sta_ssid) ;
-    content1 +=  F(" ><br /><br />");
+    content1 +=  FPSTR(br_html);
 
     content1 += F("<li><label for='pwd' class=\"req\">PASS : </label> <input type='password' class=\"txt\" name='pwd' id='pwd' value=");
     content1 += String(WiFiConf.sta_pwd);
-    content1 += F("><br /><br />");
+    content1 += FPSTR(br_html);
 
     content1 += F("<li><label for='ip' class=\"req\">IP : </label> <input name='ip' class=\"txt\" id='ip' value=");
     content1 += String(WiFiConf.sta_ip) ;
-    content1 +=  F(" ><br /><br />");
-    
+    content1 +=  FPSTR(br_html);
+
     content1 += F("<li><label for='gateway' class=\"req\">GATEWAY : </label> <input  name='gateway' class=\"txt\" id='gateway' value=") ;
     content1 += String(WiFiConf.sta_gateway) ;
-    content1 += F("><br /><br />");
+    content1 += FPSTR(br_html);
 
     content1 += F("<li><label for='subnet' class=\"req\">SUBNET : </label> <input  name='subnet' class=\"txt\" id='subnet' value=");
     content1 +=  String(WiFiConf.sta_subnet);
-    content1 += F("><br /><br />");
-    content += "mHome - Wifi Setup";
-    content += F("</title></head><body>");
+    content1 += FPSTR(br_html);
+    content += "Wifi Setup";
+    content += FPSTR(title_html);
 
     content += F("<h1>Wifi Setup</h1>");
     content += content1;
-   content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change Settings?\");'></form>");
-    
+    content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change?\");'></form>");
+
     content += F(" </p>");
     content += network_html;
-    content += F("</body></html>");
-    server.send(200, F("text/html"), content);
-    
-  });
-server.on("/sdt_conf", []() {
-     String content = FPSTR(header); content += FPSTR(begin_title);
-     String   content1 = F("<p>Wifi Connected: ");
-    content1 += WiFiConf.sta_ssid;
-    //content1 += F("</br>IP Address: ");
-    //content1 += ipStr;
-    //content1 += F(" ( ");
-    //content1 += WiFiConf.module_id;
-    //content1 += F(".local");
-    //content1 += F(" )</p>");
-    content1 += F("<p>");
-    content1 += F("</p><form method='get' action='set_sdt_conf'>");
-    content1 += F("<li><label for='SDT1' class=\"req\">Phone Number 1: </label> <input  name='SDT1' class=\"txt\" id='SDT1' value=");
-    content1 +=String(WiFiConf.sta_SDT1);
-    content1 +=F("><br /><br />");
-    content1 += F("<li><label for='SDT2' class=\"req\">Phone Number 2: </label> <input name='SDT2' class=\"txt\" id='SDT2'value=");
-    content1 +=String(WiFiConf.sta_SDT2);
-    content1 +=F("><br /><br />");
-    content1 +=F("<li><label for='SDT3' class=\"req\">Phone Number 3: </label> <input  name='SDT3' class=\"txt\" id='SDT3' value=");
-    content1 +=String(WiFiConf.sta_SDT3);
-    content1 +=F("><br /><br />");
-    content1 += F("<li><label for='SDT4' class=\"req\">Phone Number 4: </label> <input  name='SDT4' class=\"txt\" id='SDT4' value=");
-    content1 +=String(WiFiConf.sta_SDT4);
-    content1 +=F("><br /><br />");
-    content += "mHome - Phone Number";
-    content += F("</title></head><body>");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
 
-    content += F("<h1>Phone Numbers Setup</h1>");
-    content += content1;
-    content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change Settings?\");'></form>");
-    
-    content += F("<li>The phone numbers for call and sms function");
-    content += F("<li>Pls, Check 'x' for phone number not using");
-    
-    
-    content += F(" </p>");
-    //content += network_html;
-    content += F("</body></html>");
-    server.send(200, F("text/html"), content);
-   
   });
-  server.on("/set_sdt_conf", []() {
-    String new_SDT1 = server.arg("SDT1");
-    String new_SDT2 = server.arg("SDT2");
-    String new_SDT3 = server.arg("SDT3");
-    String new_SDT4 = server.arg("SDT4");
-    if (new_SDT1==""){new_SDT1="x";}
-    if (new_SDT2==""){new_SDT2="x";}
-    if (new_SDT3==""){new_SDT3="x";}
-    if (new_SDT4==""){new_SDT4="x";}
-      new_SDT1.toCharArray(WiFiConf.sta_SDT1, sizeof(WiFiConf.sta_SDT1));
-      new_SDT2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
-      new_SDT3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
-      new_SDT4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
-      saveWiFiConf();
-
-
-    server.send(200, "text/html", "OK-Reboot");
-    delay(500);
-    ESP.reset();
-  });
-  server.on("/tinnhan", []() {
-    IPAddress ip = WiFi.localIP();
-    //String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-   String content = FPSTR(header); content += FPSTR(begin_title);
-   content += F("mHome - SMS");
-    content += F("</title></head><body>");
-    content += F("<h1>SMS Function</h1>");
-    content += F("<p>");
-    content += F("</p><form method='get' action='set_noidung'><li><label for='text' class=\"req\" >Content of the message: </label><input name='text' class=\"txt\" id='text' maxlength=32  ><br /><br />");
-    content += F("<li><input type='submit' id=\"submitbtn\" value='Test' onclick='return confirm(\"Bạn muốn kiểm tra SMS ?\");'></form>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);
-  });
-  server.on("/cuocgoi", []() {
-    IPAddress ip = WiFi.localIP();
-    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - CALL");
-    content += F("</title></head><body>");
-    content += F("<h1>Call Function</h1>");
-    content += F("<p>");
-    content += F("</p><form method='get' action='set_call'>");
-    content += F("<li><input type='submit'  id=\"submitbtn\" value='Test' onclick='return confirm(\"Bạn muốn kiểm tra CALL ?\");'></form>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);
-  });
-  ////////////////////////////
-  // OUT COntrol ////////////
-#ifdef OUT_CC
-  server.on("/OUT1", []() {
-    out=1;
-    server.send(200, "text/html", "ok");
-  });
-    server.on("/OUT2", []() {
-      out=2;
-    server.send(200, "text/html", "ok");
-  });
-    server.on("/OUT3", []() {
-      out=3;
-    server.send(200, "text/html", "ok");
-  });
-#endif
-///////////////////////
-server.on("/set_ktk", []() {
-    noidung = server.arg("text");
-    guitinnhan=3;
-    server.send(200, "text/html", "ok");
-  });
-server.on("/set_noidung", []() {
-    noidung = server.arg("text");
-    guitinnhan=1;
-    server.send(200, "text/html", "ok");
-  });
-  server.on("/set_noidung1", []() {
-    noidung = server.arg("text");
-    String new_phone = server.arg("newphone");
-    new_phone.toCharArray(sdt_new, sizeof(sdt_new));
-    guitinnhan=7;
-    server.send(200, "text/html", "OK");
-  });
-  server.on("/set_rsSim", []() {  
-    guitinnhan=4;
-    server.send(200, "text/html", "OK");   
-  });
-  server.on("/set_call", []() {
-   // noidung = server.arg("text");
-    guitinnhan=2;
-    server.send(200, "text/html", "OK");
-  });
-  server.on("/set_call2", []() {
-    String new_phone = server.arg("newphone");
-    new_phone.toCharArray(sdt_new, sizeof(sdt_new));
-    guitinnhan=8;
-    server.send(200, "text/html", "OK");
-  });
- server.on("/set_naptk", []() {
-    manapthe = server.arg("Recharge");
-    manapthe.trim();
-    guitinnhan=5;
-    server.send(200, "text/html", "OK");
-  });
-//////////////
   server.on("/set_wifi_conf", []() {
     String new_ssid = server.arg("ssid");
     String new_pwd = server.arg("pwd");
     String new_ip = server.arg("ip");
     String new_gateway = server.arg("gateway");
     String new_subnet = server.arg("subnet");
-    
     if (new_ssid.length() > 0) {
       new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
       new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
       new_ip.toCharArray(WiFiConf.sta_ip, sizeof(WiFiConf.sta_ip));
       new_gateway.toCharArray(WiFiConf.sta_gateway, sizeof(WiFiConf.sta_gateway));
       new_subnet.toCharArray(WiFiConf.sta_subnet, sizeof(WiFiConf.sta_subnet));
-
       saveWiFiConf();
-      server.send(200, "text/html", "OK");
+      server.send(200, send_html, "OK");
     } else {
-      server.send(200, "text/html", "Not OK");
+      server.send(200, send_html, "Not OK");
     }
     delay(1000);
     ESP.reset();
   });
+  server.on("/sdt_conf", []() {
+    String content = FPSTR(header); content += FPSTR(begin_title);
+    String   content1 = F("<p>Wifi Connected: ");
+    content1 += WiFiConf.sta_ssid;
+    content1 += F("<p>");
+    content1 += F("</p><form method='get' action='set_sdt_conf'>");
+    content1 += F("<li><label for='SDT1' class=\"req\">Phone 1: </label> <input  name='SDT1' class=\"txt\" id='SDT1' value=");
+    content1 += String(WiFiConf.sta_SDT1);
+    content1 += FPSTR(br_html);
+    content1 += F("<li><label for='SDT2' class=\"req\">Phone 2: </label> <input name='SDT2' class=\"txt\" id='SDT2'value=");
+    content1 += String(WiFiConf.sta_SDT2);
+    content1 += FPSTR(br_html);
+    content1 += F("<li><label for='SDT3' class=\"req\">Phone 3: </label> <input  name='SDT3' class=\"txt\" id='SDT3' value=");
+    content1 += String(WiFiConf.sta_SDT3);
+    content1 += FPSTR(br_html);
+    content1 += F("<li><label for='SDT4' class=\"req\">Phone 4: </label> <input  name='SDT4' class=\"txt\" id='SDT4' value=");
+    content1 += String(WiFiConf.sta_SDT4);
+    content1 += FPSTR(br_html);
+    content += "mIOTLAB - Phone Conf";
+    content += FPSTR(title_html);
+    content += F("<h1>Phone Conf</h1>");
+    content += content1;
+    content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change?\");'></form>");
+    content += F("<li>Pls, Check 'x' for phone number not using");
+    content += F(" </p>");
+    //content += network_html;
+    content += FPSTR(_bodyhtml);
+    server.send(200,send_html, content);
+  });
+  server.on("/set_sdt_conf", []() {
+    String new_SDT1 = server.arg("SDT1");
+    String new_SDT2 = server.arg("SDT2");
+    String new_SDT3 = server.arg("SDT3");
+    String new_SDT4 = server.arg("SDT4");
+    if (new_SDT1 == "") {
+      new_SDT1 = "x";
+    }
+    if (new_SDT2 == "") {
+      new_SDT2 = "x";
+    }
+    if (new_SDT3 == "") {
+      new_SDT3 = "x";
+    }
+    if (new_SDT4 == "") {
+      new_SDT4 = "x";
+    }
+    new_SDT1.toCharArray(WiFiConf.sta_SDT1, sizeof(WiFiConf.sta_SDT1));
+    new_SDT2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
+    new_SDT3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
+    new_SDT4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
+    saveWiFiConf();
+    server.send(200, send_html, "OK-Reboot");
+    delay(500);
+    ESP.reset();
+  });
+  server.on("/tinnhan", []() {
+    //IPAddress ip = WiFi.localIP();
+    String content = FPSTR(header); content += FPSTR(begin_title);
+    content += F("SMS");
+    content += FPSTR(title_html);
+    content += F("<h1>SMS Function</h1>");
+    content += F("<p>");
+    content += F("</p><form method='get' action='set_noidung'><li><label for='text' class=\"req\" >Content of the message: </label><input name='text' class=\"txt\" id='text' maxlength=32  ><br /><br />");
+    content += F("<li><input type='submit' id=\"submitbtn\" value='Test' onclick='return confirm(\"Bạn muốn kiểm tra SMS ?\");'></form>");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
+  });
+  server.on("/set_noidung", []() {
+    noidung = server.arg("text");
+    guitinnhan = 1;
+    server.send(200, send_html, "ok");
+  });
+  server.on("/cuocgoi", []() {
+    IPAddress ip = WiFi.localIP();
+    String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+    String content = FPSTR(header); content += FPSTR(begin_title);
+    content += F("CALL");
+    content += FPSTR(title_html);
+    content += F("<h1>Call Function</h1>");
+    content += F("<p>");
+    content += F("</p><form method='get' action='set_call'>");
+    content += F("<li><input type='submit'  id=\"submitbtn\" value='Test' onclick='return confirm(\"Bạn muốn kiểm tra CALL ?\");'></form>");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
+  });
+  
+  server.on("/set_call", []() {
+    // noidung = server.arg("text");
+    guitinnhan = 2;
+    server.send(200, send_html, "OK");
+  });
+  ////////////////////////////
+  // OUT COntrol ////////////
+#ifdef OUT_CC
+  server.on("/OUT1", []() {
+    out = 1;
+    server.send(200, send_html, "ok");
+  });
+  server.on("/OUT2", []() {
+    out = 2;
+    server.send(200, send_html, "ok");
+  });
+  server.on("/OUT3", []() {
+    out = 3;
+    server.send(200, send_html, "ok");
+  });
+#endif
+  ///////////////////////
+  server.on("/set_ktk", []() {
+    noidung = server.arg("text");
+    guitinnhan = 3;
+    server.send(200, send_html, "ok");
+  });
+
+  server.on("/set_noidung1", []() {
+    noidung = server.arg("text");
+    String new_phone = server.arg("newphone");
+    new_phone.toCharArray(sdt_new, sizeof(sdt_new));
+    guitinnhan = 7;
+    server.send(200, send_html, "OK");
+  });
+  
+  server.on("/set_rsSim", []() {
+    guitinnhan = 4;
+    server.send(200, send_html, "OK");
+  });
+
+  server.on("/set_call2", []() {
+    String new_phone = server.arg("newphone");
+    new_phone.toCharArray(sdt_new, sizeof(sdt_new));
+    guitinnhan = 8;
+    server.send(200, send_html, "OK");
+  });
+  server.on("/set_naptk", []() {
+    manapthe = server.arg("Recharge");
+    manapthe.trim();
+    guitinnhan = 5;
+    server.send(200, send_html, "OK");
+  });
+  //////////////
 
   server.on("/module_id", []() {
     IPAddress ip = WiFi.localIP();
@@ -431,8 +231,8 @@ server.on("/set_noidung", []() {
     setDefaultModuleId(defaultId);
     String content = FPSTR(header); content += FPSTR(begin_title);
     content += WiFiConf.module_id;
-    content +=F(".local - Module ID");
-    content += F("</title></head><body>");
+    content += F(".local - Module ID");
+    content += title_html;
     content += F("<h1>Module ID cho Wifi</h1>");
     content += F("<p>Module ID: ");
     content += WiFiConf.module_id;
@@ -446,8 +246,8 @@ server.on("/set_noidung", []() {
     content += F(" Empty will reset to default ID '");
     content += defaultId;
     content += F("'</p>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);    
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
 
   server.on("/set_module_id", []() {
@@ -458,68 +258,58 @@ server.on("/set_noidung", []() {
       resetModuleId();
     }
     saveWiFiConf();
-    server.send(200, "text/html", "OK");
+    server.send(200, send_html, "OK");
     delay(1000);
     ESP.reset();
   });
+  
   server.on("/Reboot", HTTP_GET, []() {
     IPAddress ip = WiFi.localIP();
     String content = FPSTR(header); content += FPSTR(begin_title);
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-    content += F("mHome - Reset");
-    content += F("</title></head><body>");
-    content += F("<h1>Thông Tin :</h1>");
-    content += F("<p>Cty : TNHH Kim Sơn Tiến ");
-    content += F("</br>Địa chỉ : 65/39 Đường 339 Phường Tăng Nhơn Phú B,Q9,TP.HCM");
-    content += F("</br>Phát Triển : Phạm An Nhàn");
+    content += F("Reset");
+    content += FPSTR(title_html);
+    content += F("</br>");
     content += F("</p>");
     content += F("<p>");
     content += F("<form method='get' action='set_Reset'>");
-    content += F("<input type='submit'  id=\"submitbtn\" value='Reset' onclick='return confirm(\"Bạn Có Muốn Khởi Động Lại Module ?\");'></form>");
+    content += F("<input type='submit'  id=\"submitbtn\" value='Reset' onclick='return confirm(\"REBOOT NOW ?\");'></form>");
     content += F("</p>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
 
-server.on("/mang_didong", []() {
+  server.on("/mang_didong", []() {
     String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - USSD");
-    content += F("</title></head><body>");
-
-     
+    content += F("USSD");
+    content += FPSTR(title_html);
     content += F("<h1>Cellular network settings</h1>");
     content += F("<p>Wifi conected : ");
     content += WiFiConf.sta_ssid;
-   // content += F("</br>IP address: ");  
     content += F("</p><form method='get' action='set_mang_didong'>");
-
     content += F("<li><label for='manap' class=\"req\">USSD for Recharge code :&nbsp;</label><input name='manap' class=\"txt\" id='manap' maxlength=32 value=");
     content += String(WiFiConf.sta_manap);
-    content += F(" ><br /><br />");
-
-    content +=F("<li><label for='makttk' class=\"req\">USSD for Balance Check : </label> <input  name='makttk' class=\"txt\" id='pwdhc2' value=");
+    content += FPSTR(br_html);
+    content += F("<li><label for='makttk' class=\"req\">USSD for Balance Check : </label> <input  name='makttk' class=\"txt\" id='pwdhc2' value=");
     content += String(WiFiConf.sta_makttk) ;
-    content += F("><br /><br />");
-    
+    content += FPSTR(br_html);
     content += F("<input type='submit'  id=\"submitbtn\" value='OK' onclick='return confirm(\"Change Setting ?\");'></form>");
-
-    content += F("<li>Ex: Recharge code:55555555555 . USSD: *100* ->*100*55555555555#");
-    content += F("<li>USSD for Balance Check : *101#,*102#...");
-    
-     content += F("</body></html>");
-    server.send(200, F("text/html"), content);
+    content += F("<li>Ex: Recharge code:xxx . USSD: *100* ->*100*xxx#");
+    content += F("<li>USSD for Balance Check : *101#");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
+  
   server.on("/set_mang_didong", []() {
     String new_naptk = server.arg("manap");
     String new_makttk = server.arg("makttk");
-      new_naptk.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
-      new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
-      saveWiFiConf();
-    server.send(200, F("text/html"), "OK");
+    new_naptk.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
+    new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
+    saveWiFiConf();
+    server.send(200, send_html, "OK");
   });
 
-  
-  server.on("/hc2_conf", []() {    
+  server.on("/hc2_conf", []() {
     String content = FPSTR(header); content += FPSTR(begin_title);
     String    content1 = ipStr;
     content1 += F(" ( ");
@@ -530,58 +320,58 @@ server.on("/mang_didong", []() {
     content1 += F("</p><form method='get' action='set_hc2_conf'>");
     content1 += F("<div class=\"row\">");
     content1 += "<li><select name='button' class=\"dropbtn\" >";
-    String id_check="";
-    
+    String id_check = "";
+
     for (int i = 0; i < 2; i++) {
       switch (i) {
-        case 0:  id_check = "HC2";break;
-        case 1:  id_check = "HCL";break;
+        case 0:  id_check = "HC2"; break;
+        case 1:  id_check = "HCL"; break;
       }
       if (atoi(WiFiConf.choose_hc) != i)
-      content1 += "<option value=\"" + String(i) + "\">" +  id_check + "</option>";
+        content1 += "<option value=\"" + String(i) + "\">" +  id_check + "</option>";
       else
-      content1 += "<option value=\"" + String(i) + "\" selected>" +  id_check + "</option>";
+        content1 += "<option value=\"" + String(i) + "\" selected>" +  id_check + "</option>";
     }
     content1 += "</select>";
     content1 += F("</div>");
     content1 += F("<li><label for='iphc2' class=\"req\">IP HC2:</label><input name='iphc2' class=\"txt\" id='iphc2' maxlength=32 value=");
     content1 += String(WiFiConf.sta_iphc2);
-    content1 += F(" ><br /><br />");
-    content1 +=F("<li><label for='userhc2' class=\"req\">User HC2: </label> <input name='userhc2' class=\"txt\"  id='userhc2' value=");
+    content1 += FPSTR(br_html);
+    content1 += F("<li><label for='userhc2' class=\"req\">User HC2: </label> <input name='userhc2' class=\"txt\"  id='userhc2' value=");
     content1 += String(WiFiConf.sta_userhc) ;
-    content1 += F("><br /><br />");
-    content1 +=F("<li><label for='pwdhc2' class=\"req\">PASS HC2: </label> <input type='password' class=\"txt\" name='pwdhc2' id='pwdhc2' value=");
+    content1 += FPSTR(br_html);
+    content1 += F("<li><label for='pwdhc2' class=\"req\">PASS HC2: </label> <input type='password' class=\"txt\" name='pwdhc2' id='pwdhc2' value=");
     content1 += String(WiFiConf.sta_passhc) ;
-    content1 += F("><br /><br />");
+    content1 += FPSTR(br_html);
 
     content1 += F("<li><label for='global1' class=\"req\">Global 1:</label> <input name='global1' class=\"txt\" id='global1'value=");
     content1 += String(WiFiConf.sta_global1);
-    content1 += F(" ><br /><br />");
+    content1 += FPSTR(br_html);
 
     content1 += F("<li><label for='global2' class=\"req\">Global 2:</label> <input  name='global2' class=\"txt\" id='global2' value=");
     content1 +=  String(WiFiConf.sta_global2);
-    content1 += F("><br /><br />");
- 
-    //content1 += F("><br /><br />");  
-    content += F("mHome - Wifi Setup");
-    content += F("</title></head><body>");
+    content1 += FPSTR(br_html);
+
+    //content1 += F("><br /><br />");
+    content += F("Wifi Setup");
+    content += FPSTR(title_html);
 
     content += F("<h1>HC2 Setting</h1>");
     content += F("<p>Wifi conecting : ");
     content += WiFiConf.sta_ssid;
-    content += F("</br>IP address: ");  
+    content += F("</br>IP address: ");
     content += content1;
-    content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change Setting ?\");'></form>");
+    content += F("<input type='submit' id=\"submitbtn\" value='OK' onclick='return confirm(\"Change?\");'></form>");
     content += F("</p><form method='get' action='getHC'>");
     content += F("<input type='submit' value='Check'></form>");
     content += F(" </p>");
     content += F("<li>Information HC2");
-        content += F("<li>SIM_TK - Tai khoang SIM");
-        content += F("<li>Global1 - Trang Thai ON,OFF,OK");
-        content += F("<li>SIM_DTMF - Status DTMF");
-        content += F("<li>SIM_CALL - Phone number quitclaim calling");
-     content += F("</body></html>");
-    server.send(200, F("text/html"), content);
+    content += F("<li>SIM_TK - Tai khoang SIM");
+    content += F("<li>Global1 - Trang Thai ON,OFF,OK");
+    content += F("<li>SIM_DTMF - Status DTMF");
+    content += F("<li>SIM_CALL - Phone number quitclaim calling");
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
   server.on("/set_hc2_conf", []() {
     String data1 = server.arg(F("button"));
@@ -593,83 +383,84 @@ server.on("/mang_didong", []() {
     String new_global2 = server.arg("global2");
     //String new_global3 = server.arg("global3");
     if (new_IPHC.length() > 0) {
-      
       new_IPHC.toCharArray(WiFiConf.sta_iphc2, sizeof(WiFiConf.sta_iphc2));
       new_userhc.toCharArray(WiFiConf.sta_userhc, sizeof(WiFiConf.sta_userhc));
       new_pwdhc.toCharArray(WiFiConf.sta_passhc, sizeof(WiFiConf.sta_passhc));
       new_global1.toCharArray(WiFiConf.sta_global1, sizeof(WiFiConf.sta_global1));
       new_global2.toCharArray(WiFiConf.sta_global2, sizeof(WiFiConf.sta_global2));
       saveWiFiConf();
-    } 
-    server.send(200, F("text/html"), "OK");
+    }
+    server.send(200, send_html, "OK");
   });
   server.on("/getHC", []() {
     getHC();
-    server.send(200, F("text/html"), "OK");
+    server.send(200, send_html, "OK");
   });
   server.on("/set_language", []() {
     String new_language = server.arg("language");
-    
-    if (new_language =="Vietnamese") {String lan="1";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));}
-    else
-      {String lan="0";lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));}
-      
-      saveWiFiConf();
- 
-    server.send(200, F("text/html"), "OK");
+    if (new_language == "Vietnamese") {
+      String lan = "1";
+      lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
+    }
+    else {
+      String lan = "0";
+      lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
+    }
+    saveWiFiConf();
+    server.send(200, send_html, "OK");
     delay(1000);
     ESP.reset();
   });
   server.on("/set_Reset", HTTP_GET, []() {
-    server.send(200, F("text/html"), "OK-Reboot");
-        ESP.reset();
+    server.send(200, send_html, "OK-Reboot");
+    ESP.reset();
   });
-   server.on("/Reset1", HTTP_GET, []() {
+  server.on("/Reset1", HTTP_GET, []() {
 
-    server.send(200, F("text/html"), "K");
+    server.send(200, send_html, "OK");
   });
   server.on("/set_Reset1", HTTP_GET, []() {
-        String new_IPHC = "192.168.1.10";
-        String new_userhc = "admin";
-    String new_pwdhc = "admin";
-    String new_global1 ="temp1";
-    String new_global2 = "temp2";
-    String new_ssid = "mhome";
-    String new_pwd = "mhome";
+    String new_IPHC = "192.168.1.10";
+    String new_userhc = "";
+    String new_pwdhc = "";
+    String new_global1 = "";
+    String new_global2 = "";
+    String new_ssid = "";
+    String new_pwd = "";
     String new_ip = "192.168.1.220";
     String new_gateway = "192.168.1.1";
     String new_subnet = "255.255.255.0";
-        String new_sdt1 = "x";
+    String new_sdt1 = "x";
     String new_sdt2 = "x";
     String new_sdt3 = "x";
     String new_sdt4 = "x";
-      String new_manap="*100*";
-  String new_makttk="*101#";
+    String new_manap = "*100*";
+    String new_makttk = "*101#";
 
-      new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
-      new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
-      new_ip.toCharArray(WiFiConf.sta_ip, sizeof(WiFiConf.sta_ip));
-      new_gateway.toCharArray(WiFiConf.sta_gateway, sizeof(WiFiConf.sta_gateway));
-      new_subnet.toCharArray(WiFiConf.sta_subnet, sizeof(WiFiConf.sta_subnet));
-      new_IPHC.toCharArray(WiFiConf.sta_iphc2, sizeof(WiFiConf.sta_iphc2));
-      new_userhc.toCharArray(WiFiConf.sta_userhc, sizeof(WiFiConf.sta_userhc));
-      new_pwdhc.toCharArray(WiFiConf.sta_passhc, sizeof(WiFiConf.sta_passhc));
-      new_global1.toCharArray(WiFiConf.sta_global1, sizeof(WiFiConf.sta_global1));
-      new_global2.toCharArray(WiFiConf.sta_global2, sizeof(WiFiConf.sta_global2));
+    new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
+    new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
+    new_ip.toCharArray(WiFiConf.sta_ip, sizeof(WiFiConf.sta_ip));
+    new_gateway.toCharArray(WiFiConf.sta_gateway, sizeof(WiFiConf.sta_gateway));
+    new_subnet.toCharArray(WiFiConf.sta_subnet, sizeof(WiFiConf.sta_subnet));
+    new_IPHC.toCharArray(WiFiConf.sta_iphc2, sizeof(WiFiConf.sta_iphc2));
+    new_userhc.toCharArray(WiFiConf.sta_userhc, sizeof(WiFiConf.sta_userhc));
+    new_pwdhc.toCharArray(WiFiConf.sta_passhc, sizeof(WiFiConf.sta_passhc));
+    new_global1.toCharArray(WiFiConf.sta_global1, sizeof(WiFiConf.sta_global1));
+    new_global2.toCharArray(WiFiConf.sta_global2, sizeof(WiFiConf.sta_global2));
 
-      new_sdt1.toCharArray(WiFiConf.sta_SDT1, sizeof(WiFiConf.sta_SDT1));
-      new_sdt2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
-      new_sdt3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
-      new_sdt4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
-      new_manap.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
-      new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
-      
-      String lan="0";
-      lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
-      resetModuleId();
-      saveWiFiConf();
-      
-       ESP.reset();
+    new_sdt1.toCharArray(WiFiConf.sta_SDT1, sizeof(WiFiConf.sta_SDT1));
+    new_sdt2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
+    new_sdt3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
+    new_sdt4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
+    new_manap.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
+    new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
+
+    String lan = "0";
+    lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
+    resetModuleId();
+    saveWiFiConf();
+
+    ESP.reset();
   });
 }
 
@@ -677,211 +468,99 @@ void setupWeb(void) {
   server.on("/", []() {
     IPAddress ip = WiFi.localIP();
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-    String content = FPSTR(header); content += FPSTR(begin_title);
-    content += F("mHome - Main page");
-    content += F("</title></head><body>");
-    content += F("<h1>mHome - GSM Modem (SMS) </h1><form method='get' action='set_language'><input type=\"submit\" name=\"language\" value=\"Vietnamese\"> &nbsp &nbsp &nbsp <input type=\"submit\" name=\"language\" value=\"English\"></form>");
-    content += F("<p></p>");
-  
-
-      content +=F("<fieldset>");
-      content +=F("<legend style = \"color: red; font-size : 150%;align: Center\">Configuration</legend>");
-      content +=F("<fieldset>");
-      content +=F("<legend><a href='/wifi_conf'>Wifi setting</a></legend>");
-              if (statusmang==0){ 
-                  content += F("<li>Wifi : ");
-                  content += F("Not Connected");
-                  content += F("</br><li>GSM IP: 192.168.4.1:4999 ");
-                  content += F(" ( ");
-                  content += WiFiConf.module_id;
-                  content += F(" )</p>");
-              }
-              else{
-                  content += F("<li>Connected to : ");
-                  content += WiFiConf.sta_ssid;
-                  content += F("</br><li>GSM IP: ");
-                  content += ipStr;
-                  content += F(" ( ");
-                  content += WiFiConf.module_id;
-                  content += F(" )</p>");
-               }
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-              content +=F("<legend ><a href='/hc2_conf'>HC2 Setting</a></legend>");
-              content +=F("<li>Description:This section is for setting communication between HC2 and GSM controller");
-              content +=F("<li>Status : ");
-              content +=SerialHC2;
-              content +=F("<li>HC2 response :");
-              content +=noidung;
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-              content +=F("<legend><a href='/sdt_conf'>Phone Number</a></legend>");
-              content +=F("<li>Phone Number 1:");
-              content +=String(WiFiConf.sta_SDT1);
-              content +=F("<li>Phone Number 2:");
-              content +=String(WiFiConf.sta_SDT2);
-              content +=F("<li>Phone Number 3:");
-              content +=String(WiFiConf.sta_SDT3);
-             content +=F("<li>Phone Number 4:");
-              content +=String(WiFiConf.sta_SDT4);  
-   
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-              content +=F("<legend><a href='/mang_didong'>Cellular network settings</a></legend>");
-              //content +=F("<li>Description:");
-                  content += F("<li>USSD for Recharge code :");
-              content += String(WiFiConf.sta_manap);
-             // content += F(" ><br /><br />");
-
-            content +=F("<li>USSD for Balance Check : ");
-            content += String(WiFiConf.sta_makttk) ;
-            content +=F("<li>USSD response : ");
-            content += noidungkiemtratk ;
-    content +=F("</fieldset>");
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-    content +=F("<legend style =\"color: red; font-size : 150%;align: Center\">Test Function</legend>");
-      content +=F("<fieldset>");
-              content +=F("<legend><a href='/tinnhan'>Test SMS function.</a></legend>");
-              content +=F("<li>Description: Manually sending SMS to cell phone.");
-              content +=F("<li>Using to test sending SMS function.");
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-              content +=F("<legend><a href='/cuocgoi'>Test Calling function.</a></legend>");
-              content +=F("<li>Description: Manually calling  to cell phone.");
-              content +=F("<li>Using to test calling  function.");
-    
-    content +=F("</fieldset>");
-     content +=F("</fieldset>");
-    content +=F("<fieldset>");
-    content +=F("<legend style =\"color: red; font-size : 150%;align: Center\">Other Function</legend>");
-      content +=F("<fieldset>");
-              content +=F("<legend><a href='/firmware'>Firmware Update</a></legend>");
-              content +=F("<li>Description: This section is for update firmware of GSM controller");
-              content +=F("<li>Status : V2.6 - 28/10/2018 -  Button Config, Put Variable to HC2");
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-              content +=F("<legend><a href='/Reboot'>Reboot GSM Controller</a></legend>");
-              content +=F("<li>Description: Only reboot GSM module, parameter is not changed.");
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-            content +=F("<legend><a href='/Reset1'>Factory Reset</a></legend>");
-             content +=F("<li>Description: Clear all parameters and restore to original default settings");
-    content +=F("</fieldset>");
-    content +=F("</fieldset>");
-    content +=F("<fieldset>");
-    content +=F("<legend style =\"color: red;  font-size : 150%;align: Center\">Information</legend>");
-    content += F("<li>");
-    content += F("<li>");
-    content += F("<li>Designed by mHome - R&D Department");
-    content += F("<li>Made in VietNam");
-    
-    
-    content +=F("</fieldset>");
-    content += F("</body></html>");
-    server.send(200, "text/html", content);
+    String content = FPSTR(header); 
+    content += FPSTR(begin_title);
+    content += F("Main page");
+    content += FPSTR(title_html);
+    content += F("<h1>GSM</h1>");
+    content += FPSTR(fieldset);
+    content +=FPSTR(legend_style);
+         content += F("Config");
+         content +=FPSTR(legend_end);
+        content += FPSTR(fieldset);
+        content +=FPSTR(legendhref);
+          content += F("wifi_conf'>Wifi Conf</a>");
+          content +=FPSTR(legend_end);
+          content += F("Setting Wifi");
+        content += FPSTR(_fieldset);
+        content += FPSTR(fieldset);
+        content +=FPSTR(legendhref);
+          content += F("hc2_conf'>HC2 Conf</a>");
+          content +=FPSTR(legend_end);
+          content += F("<li>Des:setting communication between HC2 and GSM");
+          content += F("<li>Status : ");
+          content += SerialHC2;
+          content += F("<li>HC2 response :");
+          content += noidung;
+        content += FPSTR(_fieldset);
+        content += FPSTR(fieldset);
+        content +=FPSTR(legendhref);
+          content += F("sdt_conf'>Phone Conf</a>");
+          
+          content +=FPSTR(legend_end);
+          content += F("<li>Phone 1:");
+          content += String(WiFiConf.sta_SDT1);
+          content += F("<li>Phone 2:");
+          content += String(WiFiConf.sta_SDT2);
+          content += F("<li>Phone 3:");
+          content += String(WiFiConf.sta_SDT3);
+          content += F("<li>Phone 4:");
+          content += String(WiFiConf.sta_SDT4);
+       content += FPSTR(_fieldset);
+       content += FPSTR(fieldset);
+          content +=FPSTR(legendhref);
+          content += F("mang_didong'>Cellular Conf</a>");
+          content +=FPSTR(legend_end);
+          content += F("<li>USSD for Recharge code :");
+          content += String(WiFiConf.sta_manap);
+          content += F("<li>USSD for Balance Check : ");
+          content += String(WiFiConf.sta_makttk) ;
+          content += F("<li>USSD res: ");
+          content += noidungkiemtratk ;
+        content += FPSTR(_fieldset);
+    content += FPSTR(_fieldset);
+    content += FPSTR(fieldset);
+    content +=FPSTR(legend_style);
+        content += F("Test Function");
+        content +=FPSTR(legend_end);
+        content += FPSTR(fieldset);
+        content +=FPSTR(legendhref);
+          content += F("tinnhan'>SMS Test</a>");
+          content +=FPSTR(legend_end);
+          content += F("<li>Des: Manually sending SMS to phone.");
+        content += FPSTR(_fieldset);
+        content += FPSTR(fieldset);
+        content +=FPSTR(legendhref);
+          content += F("cuocgoi'>Call Test</a>");
+          content +=FPSTR(legend_end);
+          content += F("<li>Des: Manually calling  to phone.");
+        content += FPSTR(_fieldset);
+    content += FPSTR(_fieldset);
+    content += FPSTR(fieldset);
+    content +=FPSTR(legend_style);
+          content += F("Other Function</legend>");
+            content += FPSTR(fieldset);
+            content +=FPSTR(legendhref);
+              content += F("firmware'>Firmware Update</a>");
+              content +=FPSTR(legend_end);
+              content += F("<li>Status : V2.7 - 11/6/2019");
+            content += FPSTR(_fieldset);
+            content += FPSTR(fieldset);
+            content +=FPSTR(legendhref);
+              content += F("Reboot'>Reboot</a>");
+              content +=FPSTR(legend_end);
+              content += F("<li>Des: parameter is not change.");
+            content += FPSTR(_fieldset);
+            content += FPSTR(fieldset);
+            content +=FPSTR(legendhref);
+              content += F("Reset1'>Factory Reset</a>");
+              content +=FPSTR(legend_end);
+            content += FPSTR(_fieldset);
+    content += FPSTR(_fieldset);
+    content += FPSTR(_bodyhtml);
+    server.send(200, send_html, content);
   });
 }
-//*******************
-// Hafm tach IP.Gateway
-//*******************
-void parseBytes(const char* str, char sep, byte* bytes, int maxBytes, int base) {
-    for (i = 0; i < maxBytes; i++) {
-        bytes[i] = strtoul(str, NULL, base);  // Convert byte
-        str = strchr(str, sep);               // Find next separator
-        if (str == NULL || *str == '\0') {
-            break;                            // No more separators, exit
-        }
-        str++;                                // Point to next character after separator
-    }
-}
-void parseBytes1(const char* str, char sep, int address, int maxBytes, int base) {
-  for (int i = 0; i < maxBytes; i++) {
-    if (address == 1) ip10[i] = strtoul(str, NULL, base);  // Convert byte
-    else if (address == 2) gateway10[i] = strtoul(str, NULL, base);  // Convert byte
-    else if (address == 3) subnet10[i] = strtoul(str, NULL, base);  // Convert byte
-   // Serial.println(bytes[i]);
-    str = strchr(str, sep);               // Find next separator
-    if (str == NULL || *str == '\0') {
-      break;                            // No more separators, exit
-    }
-    str++;                                // Point to next character after separator
-  }
-}
 
-///////////////////////////////////////////
-//Set Varuable toi HC2 ////////////////////
-//////////////////////////////////////////
-void SetVariHC(String vari,String giatri) {
-  if (atoi(WiFiConf.choose_hc) == 0){
-      HTTPClient http;
-      http.begin("http://" + String(WiFiConf.sta_iphc2) + "/api/globalVariables/"+vari);
-      char* user=WiFiConf.sta_userhc;
-      char* pass=WiFiConf.sta_passhc;
-      http.setAuthorization(user, pass);
-      http.addHeader("Content-Type", "application/json");
-      http.PUT("{\"value\":\"" + giatri + "\",\"invokeScenes\":true}");
-     // http.writeToStream(&Serial);
-      http.end();
-  }
-}
-void SetVariHC2Save(String vari,String giatri) { // Theo ma hoa
-  if (atoi(WiFiConf.choose_hc) == 0){
-      int vitricat=0;    
-      char tamchar[128];
-      sprintf(tamchar, "%s:%s|", WiFiConf.sta_userhc, WiFiConf.sta_passhc);
-      for (byte tam=0;tam<sizeof(tamchar);tam++){
-            if (tamchar[tam]=='|'){
-                  vitricat=tam;
-                  break;
-            }
-      }
-      int encodedLen = base64_enc_len(vitricat-1);
-      char encoded[encodedLen];
-      base64_encode(encoded, tamchar, vitricat);
-      HTTPClient http;
-      http.begin("http://" + String(WiFiConf.sta_iphc2) + "/api/globalVariables/"+vari);
-      http.setAuthorization(encoded);
-      http.addHeader("Content-Type", "application/json");
-      http.PUT("{\"value\":\"" + giatri + "\",\"invokeScenes\":true}");
-      http.writeToStream(&Serial);
-      http.end();
-  }
-}
-////////////////////////////////////
-//Get thông số Hc2 /////////
-//////////////////////////////////
-void getHC() {
-  if (atoi(WiFiConf.choose_hc) == 0){
-  WiFiClient client;
-  if (!client.connect(WiFiConf.sta_iphc2,80)) {  
-     SerialHC2=F("connection failed");      
-    return;
-  }
-  String url = F("/api/settings/info");
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-               "Host: "+String(WiFiConf.sta_iphc2)+"\r\n" + 
-               "Connection: close\r\n\r\n");
-  unsigned long timeout = millis();
-  while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
-      //Serial.println(">>> Client Timeout !");
-      client.stop();
-      SerialHC2=F("HC2 not connected");
-      return;
-    }
-  }
-  
-  // Read all the lines of the reply from server and print them to Serial
-  while(client.available()){
-    String line = client.readStringUntil('\r');
-     if (line.length()>70) {
-      line.replace("{","");
-      line.replace("}","");
-      line.replace("\""," ");
-      line.remove(76);
-      SerialHC2=line;}
-    
-  }
-  }
-}
+
+// Set Language:  content += F("<h1>GSM </h1><form method='get' action='set_language'><input type=\"submit\" name=\"language\" value=\"Vietnamese\"> &nbsp &nbsp &nbsp <input type=\"submit\" name=\"language\" value=\"English\"></form>");

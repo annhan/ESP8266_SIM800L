@@ -11,7 +11,8 @@
 ///////////////////////////////////////////
 #define USINGWIFI true   //Bỏ là tắt chức năng wifi
 #define USING_SIM true   // Bỏ là tắt dùng SIM
-#define PIN_CONFIG  4
+//#define PIN_CONFIG  4
+#define PIN_CONFIG  16   // Dùng test
 ////////////////////////////////
 #ifdef USING_SIM
   #define DEBUG_PRINTLN(x)
@@ -117,15 +118,15 @@ struct WiFiConfStruct {
   "192.168.99.120",
   "192.168.99.1",
   "255.255.255.0",
-  "192.168.99.4",
-  "kythuat@kimsontien.com",
-  "passhc",
+  "",
+  "",
+  "",
   "x",
   "x",
   "x",
   "x",
-  "global1",
-  "global2",
+  "",
+  "",
   "1",
   "*100*",
   "*101#",
@@ -165,3 +166,4 @@ long sotien;
 boolean da_kttk=false;
 
 byte guitinnhan=0;
+byte send_hc=0;

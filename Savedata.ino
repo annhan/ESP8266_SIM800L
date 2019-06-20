@@ -30,7 +30,7 @@ long tacksotustring(String kitu){
   int len=kitu.length();
   char s[len];
   kitu.toCharArray(s, sizeof(s));
-  int j,dai; 
+  int j; 
     len=strlen(s);
     byte thoat=0;
     j=0;
@@ -50,4 +50,3 @@ long tacksotustring(String kitu){
    // Serial.println(trave);
     return  trave;
 }
-

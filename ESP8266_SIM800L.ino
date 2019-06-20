@@ -109,11 +109,11 @@ void setup() {
 #endif
   timeled = millis();
   timer_gio = timeled;
-#ifdef OUT_CC || INT_SENS
+/*#ifdef OUT_CC || INT_SENS
   guisms[0] = (digitalRead(IN1) == 0) ? 0 : 1 ;
   guisms[1] = (digitalRead(IN2) == 0) ? 0 : 1 ;
   guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
-#endif
+#endif*/
 }
 void loop() {
 #ifdef USINGWIFI
@@ -194,6 +194,7 @@ void loop() {
     SetVariHC("SIM_DTMF", String(dtmf_sim));
     dtmf_sim = 10;
   }
+
 #endif
 
   if ( (unsigned long) (millis() - timer_gio) > 20000 ) {
@@ -205,7 +206,6 @@ void loop() {
       guitinnhan = 3;
     }
     Serial.println("AT");
-    //SetVariHC("SIM_TK","2222");
     if (da_kttk) {
       if (sotien < 15000 && sotien > 1000) {
         da_kttk = false;
@@ -220,4 +220,3 @@ void loop() {
 }
 
 //******************************************************************************************************
-
