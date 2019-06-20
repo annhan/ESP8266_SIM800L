@@ -497,19 +497,16 @@ boolean end_cuocgoi(){
             }          
           }
          while((answer == 0) && ((millis() - previous) < 1000)); 
-         if      (strstr(response,"1") != NULL) dtmf_sim=1;
-         else if (strstr(response,"2") != NULL) dtmf_sim=2;
-         else if (strstr(response,"3") != NULL) dtmf_sim=3;
-         else if (strstr(response,"4") != NULL) dtmf_sim=4;
-         else if (strstr(response,"5") != NULL) dtmf_sim=5;
-         else if (strstr(response,"6") != NULL) dtmf_sim=6;
-         else if (strstr(response,"7") != NULL) dtmf_sim=7;
-         else if (strstr(response,"8") != NULL) dtmf_sim=8;
-         else if (strstr(response,"9") != NULL) dtmf_sim=9;
-         else if (strstr(response,"0") != NULL) dtmf_sim=0;
-         if (dtmf_sim != 10){SetVariHC("SIM_DTMF",String(dtmf_sim));
-                    dtmf_sim=10;
-         }
+         if      (strstr(response,"1") != NULL) {dtmf_sim=1;dtmf_sim=10;return true;}
+        // else if (strstr(response,"2") != NULL) dtmf_sim=2;
+        // else if (strstr(response,"3") != NULL) dtmf_sim=3;
+         //else if (strstr(response,"4") != NULL) dtmf_sim=4;
+         //else if (strstr(response,"5") != NULL) dtmf_sim=5;
+         //else if (strstr(response,"6") != NULL) dtmf_sim=6;
+         //else if (strstr(response,"7") != NULL) dtmf_sim=7;
+         //else if (strstr(response,"8") != NULL) dtmf_sim=8;
+         //else if (strstr(response,"9") != NULL) dtmf_sim=9;
+         //else if (strstr(response,"0") != NULL) dtmf_sim=0;
       }
     } 
     
@@ -528,13 +525,17 @@ void goidt(byte khancap) {
   int bien=0;
   answer=0;
   boolean end_cc=false;
+  /*boolean end_cc2=false;
+  boolean end_cc3=false;
+  boolean end_cc4=false;
+  boolean end_cc5=false;*/
   if (WiFiConf.sta_SDT1[0]!='x'){
     //delay(100);
     delay(1000);
      sprintf(aux_string,"ATD%s;",WiFiConf.sta_SDT1);
      do { if (bien%2500==0){answer = sendAT(aux_string,(char *)"OK",500);}bien=bien+1;delay_nhan(10);if(bien>5000){answer=1;break;}} while(answer==0); 
-         end_cc=end_cuocgoi();
-    if (end_cc) {sprintf(aux_string,"%s - Return",WiFiConf.sta_SDT1);SetVariHC("SIM_CALL",aux_string);return;}
+     end_cc=end_cuocgoi();
+     if (end_cc) {return;}
     }
     yield();
     bien=0;
@@ -543,8 +544,8 @@ void goidt(byte khancap) {
       delay_nhan(1000);
      sprintf(aux_string,"ATD%s;",WiFiConf.sta_SDT2);
      do { if (bien%2500==0){answer = sendAT(aux_string,(char *)"OK",500);}bien=bien+1;delay_nhan(10);if(bien>5000){answer=1;break;}} while(answer==0); 
-         end_cc=end_cuocgoi();
-        if (end_cc) {sprintf(aux_string,"%s - Return",WiFiConf.sta_SDT1);SetVariHC("SIM_CALL",aux_string);return;}
+     end_cc=end_cuocgoi();
+     if (end_cc) {return;}
     }    
     yield();
     bien=0;
@@ -553,8 +554,7 @@ void goidt(byte khancap) {
       delay_nhan(1000);
      sprintf(aux_string,"ATD%s;",WiFiConf.sta_SDT3);
      do { if (bien%2500==0){answer = sendAT(aux_string,(char *)"OK",500);}bien=bien+1;delay_nhan(10);if(bien>5000){answer=1;break;}} while(answer==0); 
-         end_cc=end_cuocgoi();
-    if (end_cc) {sprintf(aux_string,"%s - Return",WiFiConf.sta_SDT1);SetVariHC("SIM_CALL",aux_string);return;}
+     end_cuocgoi();
     }
 
     yield();
@@ -564,8 +564,8 @@ void goidt(byte khancap) {
       delay_nhan(1000);
      sprintf(aux_string,"ATD%s;",WiFiConf.sta_SDT4);
      do { if (bien%2500==0){answer = sendAT(aux_string,(char *)"OK",500);}bien=bien+1;delay_nhan(10);if(bien>5000){answer=1;break;}} while(answer==0); 
-         end_cc=end_cuocgoi();
-    if (end_cc) {sprintf(aux_string,"%s - Return",WiFiConf.sta_SDT1);SetVariHC("SIM_CALL",aux_string);return;}
+     end_cc=end_cuocgoi();
+     if (end_cc) {return;}
     }
     yield();
     xbuff=0;
@@ -576,11 +576,10 @@ void goidt(byte khancap) {
      delay_nhan(1000);
     sprintf(aux_string,"ATD%s;",sdt_new);
     do { if (bien%2500==0){answer = sendAT(aux_string,(char *)"OK",500);}bien=bien+1;delay_nhan(10);if(bien>5000){answer=1;break;}} while(answer==0); 
-    end_cc=end_cuocgoi();
-    if (end_cc) {sprintf(aux_string,"%s - Return",sdt_new);SetVariHC("SIM_CALL",aux_string);return;} 
+         end_cc=end_cuocgoi();
+     if (end_cc) {return;}
     }
     }
-    SetVariHC("SIM_CALL","NO ANSWER");
 #endif
 } 
 /*void goidt2() {  
