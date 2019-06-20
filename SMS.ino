@@ -483,7 +483,7 @@ boolean end_cuocgoi(){
       x++;
       if (strstr(response, "NO ANSWER") != NULL){answer=1;return false;} //Khong Bat MAy
       else if (strstr(response, "BUSY") != NULL){answer=1;return false;} // Tu Choi Cuoc Goi
-      else if (strstr(response, "NO CARRIER") != NULL){answer=1;return true;} // Bat MAy 
+      else if (strstr(response, "NO CARRIER") != NULL){answer=1;return false;} // Bat MAy 
       else if(strstr(response, "DTMF:") != NULL){
           x=0;
           memset(response, '\0', buffer_size); 
@@ -512,10 +512,14 @@ boolean end_cuocgoi(){
          }
       }
     } 
+    
     delay(10);
     yield();
   }
-  while((answer==0)&& (millis() - previous) < 60000);
+  while((answer==0)&& (millis() - previous) < 35000);
+  sendAT((char *)"ATH",(char *)"OK",500);
+  //int sendAT(char* ATcommand, char* expected_answer, unsigned int timeout) {
+  //Serial.println(F("ATH"));
 #endif
   return false;
 }
