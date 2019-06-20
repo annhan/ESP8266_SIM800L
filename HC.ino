@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////
 void printWiFiConf(void) {
-  //Serial.println(WiFiConf.sta_ssid);
- // Serial.println(WiFiConf.sta_ip);
+  Serial.println(WiFiConf.sta_ssid);
+  Serial.println(String(WiFiConf.sta_ssid));
  // Serial.println(WiFiConf.module_id);
 }
 

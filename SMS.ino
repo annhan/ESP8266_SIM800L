@@ -482,7 +482,7 @@ boolean end_cuocgoi(){
       response[x] = Serial.read();
       x++;
       if (strstr(response, "NO ANSWER") != NULL){answer=1;return false;} //Khong Bat MAy
-      else if (strstr(response, "BUSY") != NULL){answer=1;return true;} // Tu Choi Cuoc Goi
+      else if (strstr(response, "BUSY") != NULL){answer=1;return false;} // Tu Choi Cuoc Goi
       else if (strstr(response, "NO CARRIER") != NULL){answer=1;return true;} // Bat MAy 
       else if(strstr(response, "DTMF:") != NULL){
           x=0;

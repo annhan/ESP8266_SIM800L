@@ -31,8 +31,9 @@ void setupWiFiConf(void) {
     content1 += F(" )</p>");
     content1 += F("<p>");
     content1 += F("</p><form method='get' action='set_wifi_conf'>");
-    content1 += F("<li><label for='ssid' class=\"req\">SSID : </label><input name='ssid' class=\"txt\" id='ssid' maxlength=32 value=") ;
+    content1 += F("<li><label for='ssid' class=\"req\">SSID : </label><input name='ssid' class=\"txt\" id='ssid' maxlength=32 value=\"") ;
     content1 += String(WiFiConf.sta_ssid) ;
+    content1 +=  F("\"");
     content1 +=  FPSTR(br_html);
 
     content1 += F("<li><label for='pwd' class=\"req\">PASS : </label> <input type='password' class=\"txt\" name='pwd' id='pwd' value=");
