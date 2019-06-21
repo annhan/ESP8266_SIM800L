@@ -11,8 +11,8 @@
 ///////////////////////////////////////////
 #define USINGWIFI true   //Bỏ là tắt chức năng wifi
 #define USING_SIM true   // Bỏ là tắt dùng SIM
-#define PIN_CONFIG  4
-//#define PIN_CONFIG  16   // Dùng test
+//#define PIN_CONFIG  4
+#define PIN_CONFIG  16   // Dùng test
 ////////////////////////////////
 #ifdef USING_SIM
   #define DEBUG_PRINTLN(x)
@@ -132,6 +132,17 @@ struct WiFiConfStruct {
   "*101#",
   "0",
   ""
+};
+struct sdt_sendnew {
+  char sta_SDT1[15];
+  char sta_SDT2[15];
+  char sta_SDT3[15];
+  char sta_SDT4[15];
+} sdtnew = {
+  "x",
+  "x",
+  "x",
+  "x"
 };
 ///////////////////////////////////////////
 // Khai báo SMS Cho IN/OUT //////////////////

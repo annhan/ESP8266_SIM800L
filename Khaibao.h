@@ -1,9 +1,10 @@
 byte dtmf_sim=10;
+const char form_method_get[] PROGMEM = "</p><form method='get' action='";
 const char br_html[] PROGMEM = "><br /><br />";
 const char space_html[] PROGMEM ="&nbsp;";
 const char support_html[] PROGMEM =   "";
-//const char label_html[] PROGMEM ="<li><label for=";
-const char label1_html[] PROGMEM ="<label for=";
+const char label_html[] PROGMEM ="<li><label for=";
+//const char label1_html[] PROGMEM ="<label for=";
 const char _p_html[] PROGMEM ="</p>";
 const char p_html[] PROGMEM ="<p>";
 const char title_html[] PROGMEM ="</title></head><body>";
@@ -48,38 +49,31 @@ const char header[] PROGMEM = "<!DOCTYPE HTML>\r\n<html><head>"
   "color: #ffffff;"
 "}"
 
-
-                              
-"nav {"
-    "float: left;"
-    "margin-right:30px;"
-"}"
-                              
-                              ".dropbtn {"
-                              "height: 50px;width: 150px;"
+  ".dropbtn {"
+    "height: 50px;width: 150px;"
     "background-color: #4CAF50;"
     "color: white;"
     "padding: 10px;"
     "font-size: 20px;"  
 "}"
-
-                              "fieldset {"
-"margin-top:10px;"
-"background:#ffffcc;"
-"}"
+                              
+"nav {"
+    "float: left;"
+    "margin-right:30px;"
+"}"                              
 "legend {"
-"background:#ffffac;"
- "border:1px solid #000; "
-" padding:2px 5px;"
+"background:#abedab;"
+  "border:1px solid #000;"
 "}"
-"body {background-color:lightgrey;}"
+"fieldset {"
+  "background:#abedab;"
+"}"
+
+"body {background-color:#c9cfc9;}"
 "h1 {"
-"border-bottom: 1px solid #BBBBBB;"
     "font-size: 2em;"
     "text-align: center;"
-    "text-shadow: 0 2px #FFFFFF, 1px 3px #666666;"
 "}"
-
 "form .row {"
   "padding: 7px 8px;"
   "margin-bottom: 7px;"
@@ -87,7 +81,6 @@ const char header[] PROGMEM = "<!DOCTYPE HTML>\r\n<html><head>"
 "form .row:hover {"
   "background: #f1f7fa;"
 "}"
-
 "form label {"
   "display: inline-block;"
   "font-weight: bold;"
@@ -138,3 +131,21 @@ const char begin_title[] PROGMEM ="<title>";
 
 
 const char status_html_ok[] PROGMEM ="OK";
+
+/*"border-bottom: 1px solid #BBBBBB;"
+    "font-size: 2em;"
+    "text-align: center;"
+    "text-shadow: 0 2px #FFFFFF, 1px 3px #666666;"
+"}"
+
+
+"fieldset {"
+  "margin-top:10px;"
+  "background:#ffffcc;"
+"}"
+
+"legend {"
+  "background:#ffffac;"
+
+
+*/

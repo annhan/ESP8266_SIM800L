@@ -22,7 +22,7 @@ void receive_uart();
 void init_SIM900A();
 int sendAT(char* ATcommand, char* expected_answer, unsigned int timeout);
 void power_on();
-void send_SMS(String noidungsms = "");
+void send_SMS(String noidungsms = "",byte khancap=0);
 void kttk(String nd);
 int limit_connect = 0;
 void blink_led(int thoigian) {
@@ -114,6 +114,7 @@ void setup() {
   guisms[1] = (digitalRead(IN2) == 0) ? 0 : 1 ;
   guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
 #endif*/
+noidung="";
 }
 void loop() {
 #ifdef USINGWIFI
@@ -134,7 +135,7 @@ void loop() {
           statusmang = 0;
           timeled = millis();
         }
-        if (limit_connect > 5) {
+        if (limit_connect > 20) {
           ESP.reset();
         }
         if (cho - 55 == 0) {
@@ -145,8 +146,7 @@ void loop() {
         else
         {
           if ( (unsigned long) (millis() - timeled) > 500 ) {
-            if ( digitalRead(status_led) == LOW )digitalWrite(status_led, HIGH);
-            else digitalWrite(status_led, LOW );
+            digitalWrite(status_led, !digitalRead(status_led));
             timeled = millis();
             cho++;
           }
@@ -160,7 +160,7 @@ void loop() {
   switch (guitinnhan) {
     case 1:
       guitinnhan = 0;
-      send_SMS(noidung);
+      send_SMS(noidung,0);
       break;
     case 2:
       guitinnhan = 0;
@@ -181,11 +181,19 @@ void loop() {
       break;
     case 7:
       guitinnhan = 0;
-      send_SMS1(noidung);
+      send_SMS(noidung,1);
       break;
     case 8:
       guitinnhan = 0;
       goidt(1);
+      break;
+    case 9:
+      guitinnhan = 0;
+      send_SMS1(noidung);
+      break;
+    case 10:
+      guitinnhan = 0;
+      goidt_new();
       break;
     default:
       break;
@@ -209,9 +217,9 @@ void loop() {
     if (da_kttk) {
       if (sotien < 15000 && sotien > 1000) {
         da_kttk = false;
-        noidung = "Chu y : So TK con ";
+        noidung = "TK con ";
         noidung = noidung + String(sotien);
-        noidung = noidung + "d. De nap soan cu phap NAP:mathe. gui den sdt nay";
+        noidung = noidung + "d. Rep NAP:mathe. de nap tien";
         guitinnhan = 1;
       }
     };
