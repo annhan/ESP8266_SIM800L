@@ -11,8 +11,8 @@
 ///////////////////////////////////////////
 #define USINGWIFI true   //Bỏ là tắt chức năng wifi
 #define USING_SIM true   // Bỏ là tắt dùng SIM
-//#define PIN_CONFIG  4
-#define PIN_CONFIG  16   // Dùng test
+#define PIN_CONFIG  4
+//#define PIN_CONFIG  16   // Dùng test
 ////////////////////////////////
 #ifdef USING_SIM
   #define DEBUG_PRINTLN(x)
