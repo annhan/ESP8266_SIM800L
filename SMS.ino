@@ -138,6 +138,7 @@ void receive_uart() {
           manap.replace("\"", "");
           noidungkiemtratk=manap;
           sotien=tacksotustring(noidungkiemtratk);
+          noidungkiemtratk = noidungkiemtratk + sotien;
           SetVariHC("SIM_TK",manap);
           if (statusnaptk==1){send_SMS(manap);}
   } 
