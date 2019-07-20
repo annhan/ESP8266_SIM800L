@@ -1,5 +1,7 @@
 //GET /set_smsnew?1=0966461323&2=0966461323&3=0966461323&4=0966461323&s=csdsdsd 0x0D0x0A0x0D0x0A
 //GET /set_callnew?1=0966461323&2=0966461323&3=0966461323&4=0966461323 0x0D0x0A0x0D0x0A
+///set_security?button=6
+//sendsmshcl
 ////////////////////////////////////
 //chờ kết nối mạng /////////
 //////////////////////////////////
@@ -478,6 +480,7 @@ void setupWiFiConf(void) {
     data1.toCharArray(WiFiConf.sta_security, sizeof(WiFiConf.sta_security));
     saveWiFiConf();
     server.send(200, send_html, "OK-Reboot");
+    delay(1500);
     ESP.reset();
   });
   server.on("/Reset1", HTTP_GET, []() {
@@ -554,6 +557,10 @@ void setupWeb(void) {
     content += F("wifi_conf'>Wifi Conf</a>");
     content += FPSTR(legend_end);
     content += F("<li>Setting Wifi");
+    if (status_sec == false){
+    content += F("<li>Security: Fail");
+    }
+    else {content += F("<li>Security: OK");}
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legendhref);
