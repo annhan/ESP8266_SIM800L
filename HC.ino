@@ -305,43 +305,25 @@ bool processJson(char* message) {
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(message);
   if (!root.success()) {return false;} 
-  if (root.containsKey("value")) {
-    
+  if (root.containsKey("value")) { 
     noidung = root["value"].as<String>();
-    Serial.println(noidung);
     return true;
-    
-    /*if (strcmp(root["command"], send_cmd) == 0)
-    { String type=root["para"]["type"].as<String>();
-      String remote=root["para"]["remote"].as<String>();
-      String button=root["para"]["button"].as<String>();
-      Serial.println(remote);
-      Serial.println(button);
-      type = type + "/" + remote + "/" + button + ".txt";
-    int chieudai = read_file_setting(type , 3 );
-    }*/
   }
   return false;
 }
 void getvariable_tosendSMS() {
       WiFiClient client;
       HTTPClient http_hc; //" + String(WiFiConf.sta_iphc2) + "
-      http_hc.begin(client,"http://CtyNamPhuDat.ahdns.info:8888/api/globalVariables/noidungtinnhan");
+      http_hc.begin(client,"http://" + String(WiFiConf.sta_iphc2) + "/api/globalVariables/noidungtinnhan");
       char* user=WiFiConf.sta_userhc;
       char* pass=WiFiConf.sta_passhc;
       http_hc.setAuthorization(user, pass);
       http_hc.addHeader("Content-Type", "application/json");
       http_hc.GET();
       String payload = http_hc.getString();
-     // payload.toCharArray(sdtnew.sta_SDT1, sizeof(sdtnew.sta_SDT1));
-      Serial.println(payload);
       http_hc.end();
       char message[payload.length() + 1];
       payload.toCharArray(message, sizeof(message));
-      /*for (int i = 0; i < length; i++) {
-        message[i] = (char)payload[i];
-      }
-      message[length] = '\0';*/
       if (processJson(message)) {
       guitinnhan = 1;
       }
