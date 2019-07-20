@@ -103,7 +103,7 @@ void setup() {
   getHC();
   power_on();
   init_SIM900A();
-  manap = WiFiConf.sta_manap;
+ // manap = WiFiConf.sta_manap;
   manap.trim();
   guitinnhan = 0;
 #endif
@@ -115,6 +115,8 @@ void setup() {
   guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
 #endif*/
 noidung="";
+
+if (atoi(WiFiConf.sta_security) == 6){status_sec = true;}
 }
 void loop() {
 #ifdef USINGWIFI
@@ -123,34 +125,13 @@ void loop() {
     switch (WiFi.status())
     {
       case WL_CONNECTED:
-        if (statusmang == 0) {
-          digitalWrite(status_led, LOW);
-          statusmang = 1;
-          cho = 0;
-          limit_connect = 0;
-        }
+        if (statusmang == 0) {digitalWrite(status_led, LOW);statusmang = 1;cho = 0;limit_connect = 0;}
         break;
       default:
-        if (statusmang != 0) {
-          statusmang = 0;
-          timeled = millis();
-        }
-        if (limit_connect > 20) {
-          ESP.reset();
-        }
-        if (cho - 55 == 0) {
-          //connect_wifi();
-          limit_connect++;
-          cho = 0;
-        }
-        else
-        {
-          if ( (unsigned long) (millis() - timeled) > 500 ) {
-            digitalWrite(status_led, !digitalRead(status_led));
-            timeled = millis();
-            cho++;
-          }
-        }
+        if (statusmang != 0) {statusmang = 0;timeled = millis();}
+        if (limit_connect > 20) {ESP.reset();}
+        if (cho - 55 == 0) {limit_connect++;cho = 0;}
+        else if ( (unsigned long) (millis() - timeled) > 500 ) {digitalWrite(status_led, !digitalRead(status_led));timeled = millis();cho++;        }
         break;
     }
   }
@@ -209,10 +190,7 @@ void loop() {
     timer_gio = millis();
     thoigian_gio++;
 #ifdef USING_SIM
-    if (thoigian_gio > 2160) {
-      thoigian_gio = 0;
-      guitinnhan = 3;
-    }
+    if (thoigian_gio > 2160) { thoigian_gio = 0;guitinnhan = 3;}
     Serial.println("AT");
     if (da_kttk) {
       if (sotien < 15000 && sotien > 1000) {
@@ -222,7 +200,7 @@ void loop() {
         noidung = noidung + "d. Rep NAP:mathe. de nap tien";
         guitinnhan = 1;
       }
-    };
+    }
 #endif
   }
 }

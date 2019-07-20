@@ -11,8 +11,8 @@
 ///////////////////////////////////////////
 #define USINGWIFI true   //Bỏ là tắt chức năng wifi
 #define USING_SIM true   // Bỏ là tắt dùng SIM
-//#define PIN_CONFIG  4
-#define PIN_CONFIG  16   // Dùng test
+#define PIN_CONFIG  4
+//#define PIN_CONFIG  16   // Dùng test
 ////////////////////////////////
 #ifdef USING_SIM
   #define DEBUG_PRINTLN(x)
@@ -33,7 +33,7 @@
   String network_html;
   String ipStr="Check Connect";
   String SerialHC2="Check Connect";
-  String manap;
+  String manap="*100*";
 #else
  #define DEBUG_PRINTLN(x)  Serial.println (x)
  #define DEBUG_PRINT(x)  Serial.println (x)
@@ -42,7 +42,7 @@
 //#define OUT_CC true  // Bỏ là khong dung cua cuon
 //#define IN true       // Bỏ là không dùng IN
 //#define INT_SENS true // Bỏ là không dùng IN
-#define Ver_old true  // Bỏ là dung chan Ver Mới
+//#define Ver_old true  // Bỏ là dung chan Ver Mới
 #ifdef Ver_old
   #define status_led  4
 #else
@@ -110,13 +110,14 @@ struct WiFiConfStruct {
   char sta_manap[10];
   char sta_makttk[10];
   char choose_hc[4];
+  char sta_security[3];
   char module_id[32];
 } WiFiConf = {
   WIFI_CONF_FORMAT,
-  "mhome1",
-  "nangniutoam",
-  "192.168.99.120",
-  "192.168.99.1",
+  "An Nhan",
+  "xxxyyy",
+  "192.168.1.210",
+  "192.168.1.1",
   "255.255.255.0",
   "",
   "",
@@ -130,6 +131,7 @@ struct WiFiConfStruct {
   "1",
   "*100*",
   "*101#",
+  "0",
   "0",
   ""
 };
@@ -178,3 +180,4 @@ boolean da_kttk=false;
 
 byte guitinnhan=0;
 byte send_hc=0;
+boolean status_sec = false ; 

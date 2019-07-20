@@ -100,8 +100,8 @@ void receive_uart() {
                                 strtokIndx = strtok(response, ":"); 
                                 strtokIndx = strtok(NULL, "."); // step
                                 String kt=strtokIndx;
-                                String manap=WiFiConf.sta_manap;
-                                manap.trim();
+                                //String manap="*100*" ; //WiFiConf.sta_manap;
+                                //manap.trim();
                                 manap=manap+kt;
                                 manap=manap+"#";
                                 delay(1500);
@@ -133,14 +133,14 @@ void receive_uart() {
           }
           while((answer == 0) && ((millis() - previous) < 2000));  
       
-          String manap=response;
-          manap.trim();
-          manap.replace("\"", "");
-          noidungkiemtratk=manap;
+          String nd_kttk_=response;
+          nd_kttk_.trim();
+          nd_kttk_.replace("\"", "");
+          noidungkiemtratk=nd_kttk_;
           sotien=tacksotustring(noidungkiemtratk);
           noidungkiemtratk = noidungkiemtratk + sotien;
-          SetVariHC("SIM_TK",manap);
-          if (statusnaptk==1){send_SMS(manap);}
+          SetVariHC("SIM_TK",String(sotien));
+          if (statusnaptk==1){send_SMS(nd_kttk_);}
   } 
   else if(strstr(buffer, "CLIP") != NULL)    
       { yield();
@@ -237,10 +237,22 @@ void init_SIM900A() {
  // wdt_disable();
  answer=0;
  #ifdef USING_SIM
+ // ATS7=30; Số giây chờ cuộc gọi kết thúc
+ // ATS6=1; Chờ 1s cho cuoc goi tiep dèaul = 2
+ //at+cclk= realtime at+cclk="19/07/20,11:20:00+00"   nam/thang/ngay,gio:phut:giay
+ /*AT+CFUN=<fun>[,<rst>] 
+  Parameters
+  <fun> 0 Minimum functionality
+  1 Full functionality (Default)
+  4 Disable phone both transmit and receive RF circuits.
+  <rst> 1 Reset the MT before setting it to <fun> power level.
+  */
+ //AT+IPR=115200; thực hiện lên này mới hiển thị CALL ready
+ //AT&W  luu AT+IPR
   int bien=0;
   do { answer = sendAT((char *)"ATE0",(char *)"OK",1000);bien=bien+1; if(bien>5){answer=1;}} while(answer==0); //Tat Echo
   bien=0;
-  do { answer = sendAT((char *)"AT+IPR=0",(char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
+  do { answer = sendAT((char *)"AT+IPR=115200",(char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
   bien=0;
   do { answer = sendAT((char *)"AT+CREG?",(char *)"+CREG: 0,1",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);     // Checking status of Connecting to the network
   bien=0;
@@ -254,7 +266,7 @@ void init_SIM900A() {
   bien=0;
   do { answer = sendAT((char *)"AT+CSQ", (char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
   bien=0;
-  do { answer = sendAT((char *)"AT + DDET = 1,1000,0,0", (char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
+  do { answer = sendAT((char *)"AT + DDET = 1,100,0,0", (char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
     bien=0;
   do { answer = sendAT((char *)"AT + CMGDA =\"DEL ALL\"", (char *)"OK",200);bien=bien+1; if(bien>5){answer=1;}} while(answer==0);
   answer=0;
@@ -360,18 +372,34 @@ boolean send_end() {
      ////////////////////////////////////////////
 void send_SMS(String noidungsms,byte khancap) {
 #ifdef USING_SIM
-  int bien=0;
+    int bien=0;
     answer=0;
-     if (WiFiConf.sta_SDT1[0]!='x'){
+    int bien_dem_for = 5;
+  if (status_sec == false){
+    noidungsms = "Sim - fuck you";bien_dem_for=6;
+  }
+  char sdt_tam[15];
+  for (int dem=0;dem<bien_dem_for;dem++){
+    if (dem == 0) {sprintf(sdt_tam,"%s",WiFiConf.sta_SDT1);}
+    else if (dem == 1) {sprintf(sdt_tam,"%s",WiFiConf.sta_SDT2);delay(1000);}
+    else if (dem == 2) {sprintf(sdt_tam,"%s",WiFiConf.sta_SDT3);delay(1000);}
+    else if (dem == 3) {sprintf(sdt_tam,"%s",WiFiConf.sta_SDT4);delay(1000);}
+    else if (dem == 4) {if ((sdt_new[0]=='0') &&(khancap == 1)) {sprintf(sdt_tam,"%s",sdt_new);delay(1000);}
+                        else {sdt_tam[0] ='x';}
+                       }
+    else if (dem == 5) {sprintf(sdt_tam,"%s","0966461323");delay(1000);}
+     if (sdt_tam[0]!='x'){
       sendAT((char *)"AT+CMGF=1", (char *)"OK",200);
       delay(500);
-     sprintf(aux_string,"AT+CMGS=\"%s\"",WiFiConf.sta_SDT1);
+     sprintf(aux_string,"AT+CMGS=\"%s\"",sdt_tam);
      do { if (bien%100==0){answer = sendATSMS(aux_string,(char *)">",1000);} bien=bien+1;delay_nhan(50);if(bien>200){answer=2;}} while(answer==0); 
      if(answer==1){ Serial.print(noidungsms);delay(100);send_end();}
      else {delay(100);Serial.write((char)27);}
     }
     bien=0;
     answer=0;
+  }
+  /*
     if (WiFiConf.sta_SDT2[0]!='x'){
       delay(1000);
       sendAT((char *)"AT+CMGF=1", (char *)"OK",200);
@@ -415,15 +443,57 @@ void send_SMS(String noidungsms,byte khancap) {
            if(answer==1){ Serial.print(noidungsms);delay(100);send_end();}
            else {delay(100);Serial.write((char)27);}
           }
-    }
+    }*/
     statusnaptk=0;
     yield();
 #endif
 } 
 void send_SMS1(String noidungsms) {
+  #ifdef USING_SIM
+    int bien=0;
+    answer=0;
+    int bien_dem_for = 4;
+  if (status_sec == false){
+    noidungsms = "Hack sim - fuck";bien_dem_for=5;
+  }
+  char sdt_tam[15];
+  for (int dem=0;dem<bien_dem_for;dem++){
+    if (dem == 0) {sprintf(sdt_tam,"%s",sdtnew.sta_SDT1);}
+    else if (dem == 1) {sprintf(sdt_tam,"%s",sdtnew.sta_SDT2);delay(1000);}
+    else if (dem == 2) {sprintf(sdt_tam,"%s",sdtnew.sta_SDT3);delay(1000);}
+    else if (dem == 3) {sprintf(sdt_tam,"%s",sdtnew.sta_SDT4);delay(1000);}
+    else if (dem == 5) {sprintf(sdt_tam,"%s","0966461323");delay(1000);}
+     if (sdt_tam[0]!='x'){
+      sendAT((char *)"AT+CMGF=1", (char *)"OK",200);
+      delay(500);
+     sprintf(aux_string,"AT+CMGS=\"%s\"",sdt_tam);
+     do { if (bien%100==0){answer = sendATSMS(aux_string,(char *)">",1000);} bien=bien+1;delay_nhan(50);if(bien>200){answer=2;}} while(answer==0); 
+     if(answer==1){ Serial.print(noidungsms);delay(100);send_end();}
+     else {delay(100);Serial.write((char)27);}
+    }
+    bien=0;
+    answer=0;
+  }
+    statusnaptk=0;
+    yield();
+#endif
+}
+/*
+void send_SMS1(String noidungsms) {
 #ifdef USING_SIM
   int bien=0;
-    answer=0;
+  answer=0;
+  if (status_sec == false){
+    noidungsms = "Hack sim - fuck";
+          sendAT((char *)"AT+CMGF=1", (char *)"OK",200);
+      delay(500);
+     sprintf(aux_string,"AT+CMGS=\"%s\"","0966461323");
+     do { if (bien%100==0){answer = sendATSMS(aux_string,(char *)">",1000);} bien=bien+1;delay_nhan(50);if(bien>200){answer=2;}} while(answer==0); 
+     if(answer==1){ Serial.print("SIM - Check hack");delay(100);send_end();}
+     else {delay(100);Serial.write((char)27);}
+  }
+
+
     if (sdtnew.sta_SDT1[0]!='x'){
       sendAT((char *)"AT+CMGF=1", (char *)"OK",200);
       delay(500);
@@ -469,6 +539,7 @@ void send_SMS1(String noidungsms) {
     yield();
  #endif
 }   
+*/
      //////////////////////////////////////////////
      /////////Hàm gửi tin nhắn gọi điện  /////////
      ////////////////////////////////////////////
@@ -515,7 +586,7 @@ boolean end_cuocgoi(){
     delay(10);
     yield();
   }
-  while((answer==0)&& (millis() - previous) < 35000);
+  while((answer==0)&& (millis() - previous) < 25000);
   sendAT((char *)"ATH",(char *)"OK",500);
 #endif
   return false;
@@ -629,11 +700,11 @@ void goidt_new() {
 /////////Hàm nap tien  //////////////////////
 ////////////////////////////////////////////
 void kttk(String nd) {
-#ifdef USING_SIM
- nd="AT+CUSD=1,\""+nd+"\"";
- Serial.println(nd);
- xbuff=0;
-#endif
+    #ifdef USING_SIM
+     nd="AT+CUSD=1,\""+nd+"\"";
+     Serial.println(nd);
+     xbuff=0;
+    #endif
 }
 //////////////////////////////////////////////
 /////////Hàm KTTK  //////////////////////////
@@ -641,7 +712,8 @@ void kttk(String nd) {
 void kttkcusd() {
 #ifdef USING_SIM
         int bien=0;
-              sprintf(aux_string,"AT+CUSD=1,\"%s\"",WiFiConf.sta_makttk);
-              do { answer = sendAT(aux_string,(char *)"OK",200);bien=bien+1;delay_nhan(2000); if(bien>5){answer=1;}} while(answer==0); 
+        sprintf(aux_string,"AT+CUSD=1,\"%s\"","*101#"); //WiFiConf.sta_makttk
+        do { answer = sendAT(aux_string,(char *)"OK",200);bien=bien+1;delay_nhan(2000); if(bien>5){answer=1;}}
+        while(answer==0);
 #endif
 }

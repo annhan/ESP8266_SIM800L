@@ -205,7 +205,10 @@ void setupWiFiConf(void) {
     guitinnhan = 3;
     server.send(200, send_html, "ok");
   });
-
+  server.on("/sendsmshcl", []() {
+    getvariable_tosendSMS();
+    server.send(200, send_html, "ok");
+  });
   server.on("/set_noidung1", []() {
     noidung = server.arg("text");
     String new_phone = server.arg("newphone");
@@ -334,7 +337,7 @@ void setupWiFiConf(void) {
     server.send(200, send_html, content);
   });
 
-  server.on("/mang_didong", []() {
+ /* server.on("/mang_didong", []() {
     String content = FPSTR(header); content += FPSTR(begin_title);
     content += F("USSD");
     content += FPSTR(title_html);
@@ -354,16 +357,16 @@ void setupWiFiConf(void) {
     content += F("<li>Balance Code:*101#");
     content += FPSTR(_bodyhtml);
     server.send(200, send_html, content);
-  });
+  });*/
 
-  server.on("/set_mang_didong", []() {
+  /*server.on("/set_mang_didong", []() {
     String new_naptk = server.arg("manap");
     String new_makttk = server.arg("makttk");
     new_naptk.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
     new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
     saveWiFiConf();
     server.send(200, send_html, "OK");
-  });
+  });*/
 
   server.on("/hc2_conf", []() {
     String content = FPSTR(header); content += FPSTR(begin_title);
@@ -467,6 +470,14 @@ void setupWiFiConf(void) {
     });*/
   server.on("/set_Reset", HTTP_GET, []() {
     server.send(200, send_html, "OK-Reboot");
+    
+    ESP.reset();
+  });
+ server.on("/set_security", HTTP_GET, []() {
+    String data1 = server.arg(F("button"));
+    data1.toCharArray(WiFiConf.sta_security, sizeof(WiFiConf.sta_security));
+    saveWiFiConf();
+    server.send(200, send_html, "OK-Reboot");
     ESP.reset();
   });
   server.on("/Reset1", HTTP_GET, []() {
@@ -499,8 +510,6 @@ void setupWiFiConf(void) {
     String new_sdt2 = "x";
     String new_sdt3 = "x";
     String new_sdt4 = "x";
-    String new_manap = "*100*";
-    String new_makttk = "*101#";
 
     new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
     new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
@@ -517,8 +526,6 @@ void setupWiFiConf(void) {
     new_sdt2.toCharArray(WiFiConf.sta_SDT2, sizeof(WiFiConf.sta_SDT2));
     new_sdt3.toCharArray(WiFiConf.sta_SDT3, sizeof(WiFiConf.sta_SDT3));
     new_sdt4.toCharArray(WiFiConf.sta_SDT4, sizeof(WiFiConf.sta_SDT4));
-    new_manap.toCharArray(WiFiConf.sta_manap, sizeof(WiFiConf.sta_manap));
-    new_makttk.toCharArray(WiFiConf.sta_makttk, sizeof(WiFiConf.sta_makttk));
 
     String lan = "0";
     lan.toCharArray(WiFiConf.sta_language, sizeof(WiFiConf.sta_language));
@@ -546,13 +553,12 @@ void setupWeb(void) {
     content += FPSTR(legendhref);
     content += F("wifi_conf'>Wifi Conf</a>");
     content += FPSTR(legend_end);
-    content += F("Setting Wifi");
+    content += F("<li>Setting Wifi");
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legendhref);
     content += F("hc2_conf'>HC2 Conf</a>");
     content += FPSTR(legend_end);
-    content += F("<li>Des: HC2 infor");
     content += F("<li>Status : ");
     content += SerialHC2;
     content += F("<li>HC2 response :");
@@ -570,18 +576,20 @@ void setupWeb(void) {
     content += String(WiFiConf.sta_SDT3);
     content += F("<li>Phone 4:");
     content += String(WiFiConf.sta_SDT4);
-    content += FPSTR(_fieldset);
-    content += FPSTR(fieldset);
-    content += FPSTR(legendhref);
-    content += F("mang_didong'>Cellular Conf</a>");
-    content += FPSTR(legend_end);
-    content += F("<li>Recharge code :");
-    content += String(WiFiConf.sta_manap);
-    content += F("<li>Balance Check : ");
-    content += String(WiFiConf.sta_makttk) ;
-    content += F("<li>USSD res: ");
+    content += F("<li>Res: ");
     content += noidungkiemtratk ;
     content += FPSTR(_fieldset);
+    //content += FPSTR(fieldset);
+    //content += FPSTR(legendhref);
+    //content += F("mang_didong'>Cellular Conf</a>");
+    //content += FPSTR(legend_end);
+    //content += F("<li>Recharge code :");
+    //content += String(WiFiConf.sta_manap);
+    //content += F("<li>Balance Check : ");
+   // content += String(WiFiConf.sta_makttk) ;
+    //content += F("<li>USSD res: ");
+   // content += noidungkiemtratk ;
+   // content += FPSTR(_fieldset);
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legend_style);
@@ -600,6 +608,7 @@ void setupWeb(void) {
     content += F("<li>Des: call");
     content += FPSTR(_fieldset);
     content += FPSTR(_fieldset);
+    
     content += FPSTR(fieldset);
     content += FPSTR(legend_style);
     content += F("Function");
@@ -608,7 +617,7 @@ void setupWeb(void) {
     content += FPSTR(legendhref);
     content += F("firmware'>Firmware</a>");
     content += FPSTR(legend_end);
-    content += F("<li>Status : V2.8 - 20/6/2019");
+    content += F("<li>Status : V2.8 - 19/07/2019");
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legendhref);
