@@ -55,6 +55,7 @@ void blink_led(int thoigian) {
 void setup() {
   //wdt_disable();
   pinMode(PIN_CONFIG, INPUT);
+  pinMode(MODE_INOUT, INPUT);
   pinMode(status_led, OUTPUT);
   digitalWrite(status_led, LOW);
   Serial.begin(115200);
@@ -68,6 +69,24 @@ void setup() {
   else {
     blink_led(1000);
   }
+  //**********************************
+  // IN OUT ///
+  //* *******************************
+ /*if ( digitalRead(MODE_INOUT) == LOW ) {
+    delay(1500);
+    if ( digitalRead(MODE_INOUT) == LOW ) {
+      config_status = 1;
+      Mode_INOUT = true;
+      pinMode(IN1, INPUT);
+      pinMode(IN2, INPUT);
+      pinMode(IN3, INPUT);
+      pinMode(OUT1, OUTPUT);
+      guisms[0] = (digitalRead(IN1) == 0) ? 0 : 1 ;
+      guisms[1] = (digitalRead(IN2) == 0) ? 0 : 1 ;
+      guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
+    }
+  }*/
+  //**********************************
   EEPROM.begin(1024);
   delay(10);
  // if ( config_status == 0 ) {WiFi.onEvent(eventWiFi); }
@@ -75,6 +94,13 @@ void setup() {
     resetModuleId();
     saveWiFiConf();
   }
+ /* if (Mode_INOUT){
+    WiFi.setAutoConnect(false);
+    WiFi.setAutoReconnect(false);
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP("GSM-Security", "88888888");
+  }
+  else */
   if ( config_status == 1 ) {
     WiFi.setAutoConnect(false);
     WiFi.setAutoReconnect(false);
@@ -104,7 +130,7 @@ void setup() {
   power_on();
   init_SIM900A();
  // manap = WiFiConf.sta_manap;
-  manap.trim();
+  //manap.trim();
   guitinnhan = 0;
 #endif
   timeled = millis();
@@ -136,6 +162,18 @@ void loop() {
     }
   }
 #endif
+/*if (Mode_INOUT){
+  if (digitalRead(IN1) == 0){ delay(100); if (digitalRead(IN1) == 0){if (guisms[0] == 1){ status_relay=1;noidung = "Cua Xuong Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[0]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+  //else if (digitalRead(IN1) == 1){ delay(100); if (digitalRead(IN1) == 1){if(guisms[0] == 0){ status_relay=1;noidung = "Cua Xuong Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[0]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+
+  if (digitalRead(IN2) == 0){ delay(100); if (digitalRead(IN2) == 0){if (guisms[1] == 1){ status_relay=1;noidung = "Cua Xuong 1 Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[1]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+ // else if (digitalRead(IN2) == 1){ delay(100); if (digitalRead(IN2) == 1){if(guisms[1] == 0){ status_relay=1;noidung = "Cua Xuong 1 Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[1]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+
+  if (digitalRead(IN3) == 0){ delay(100); if (digitalRead(IN3) == 0){if (guisms[2] == 1){ status_relay=1;noidung = "Cua Xuong 2 Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[2]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+ // else if (digitalRead(IN3) == 1){ delay(100); if (digitalRead(IN3) == 1){if(guisms[2] == 0){ status_relay=1;noidung = "Cua Xuong 2 Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[2]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
+
+  if (status_relay ==1){if ( (unsigned long) (millis() - timer_reset_relay) > 30000 ){digitalWrite(OUT1, LOW);digitalWrite(status_led, LOW);status_relay=0;}}
+}*/
 #ifdef USING_SIM
   receive_uart();
   switch (guitinnhan) {
@@ -153,6 +191,8 @@ void loop() {
       break;
     case 5:
       guitinnhan = 0;
+      manap="*100*";
+      manap.trim();
       manap = manap + manapthe;
       manap = manap + "#";
       kttk(manap);

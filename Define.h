@@ -66,23 +66,15 @@
     #define IN2  2   // DUng là 14
     #define IN3  12
   #endif
-#elif INT_SENS
-  #ifdef Ver_old
-    #define IN1  16  // Ver cu  la 16 - 13
-    #define IN2  14   // DUng là 14
-    #define IN3  12
-    #define OUT1  15  // 
-    #define OUT2  2   // Chueyern IN qua OUT cho CC
-    #define OUT3  4
-  #else
-    #define IN1  13  // Ver cu  la 16 - 13
-    #define IN2  14   // DUng là 14
-    #define IN3  12
-    #define OUT1  15  // 
-    #define OUT2  2   // Chueyern IN qua OUT cho CC
-    #define OUT3  4
-  #endif
 #endif
+#define IN1  13  // Ver cu  la 16 - 13
+#define IN2  14   // DUng là 14
+#define IN3  12
+#define OUT1  15  // 
+#define MODE_INOUT  16
+unsigned long timer_reset_relay=0;
+byte status_relay=0;
+boolean Mode_INOUT=false;
 /////////////////////////////////////////////
 //  WIFI FORMAT ////////////////////////////
 ///////////////////////////////////////////

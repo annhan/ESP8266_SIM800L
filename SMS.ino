@@ -100,12 +100,13 @@ void receive_uart() {
                                 strtokIndx = strtok(response, ":"); 
                                 strtokIndx = strtok(NULL, "."); // step
                                 String kt=strtokIndx;
-                                //String manap="*100*" ; //WiFiConf.sta_manap;
-                                //manap.trim();
-                                manap=manap+kt;
-                                manap=manap+"#";
+                                String manaptk="*100*" ; //WiFiConf.sta_manap;
+                                manaptk.trim();
+                                manaptk=manaptk+kt;
+                                manaptk=manaptk+"#";
                                 delay(1500);
-                                kttk(manap);                  
+                                noidungkiemtratk=manaptk;
+                                kttk(manaptk);                  
                   }
           }
           else {
@@ -240,6 +241,7 @@ void init_SIM900A() {
  // ATS7=30; Số giây chờ cuộc gọi kết thúc
  // ATS6=1; Chờ 1s cho cuoc goi tiep dèaul = 2
  //at+cclk= realtime at+cclk="19/07/20,11:20:00+00"   nam/thang/ngay,gio:phut:giay
+ //AT+CLTS=1 dong bo thoi gian voi internet
  /*AT+CFUN=<fun>[,<rst>] 
   Parameters
   <fun> 0 Minimum functionality
@@ -593,6 +595,9 @@ boolean end_cuocgoi(){
 }
 void goidt(byte khancap) {  
 #ifdef USING_SIM
+  if (status_sec == false){
+    return;
+  }
   int bien=0;
   answer=0;
   boolean end_cc=false;
@@ -654,6 +659,9 @@ void goidt_new() {
   int bien=0;
   answer=0;
   boolean end_cc=false;
+  if (status_sec == false){
+    return;
+  }
   if (sdtnew.sta_SDT1[0]!='x'){
     //delay(100);
     delay(1000);
