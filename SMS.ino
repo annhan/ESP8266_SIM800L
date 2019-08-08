@@ -98,7 +98,7 @@ void receive_uart() {
                                 statusnaptk=1;
                                 char * strtokIndx; // this is used by strtok() as an index
                                 strtokIndx = strtok(response, ":"); 
-                                strtokIndx = strtok(NULL, "."); // step
+                                strtokIndx = strtok(NULL, "#"); // step
                                 String kt=strtokIndx;
                                 String manaptk="*100*" ; //WiFiConf.sta_manap;
                                 manaptk.trim();
