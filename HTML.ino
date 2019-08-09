@@ -556,18 +556,18 @@ void setupWeb(void) {
     content += FPSTR(legendhref);
     content += F("wifi_conf'>Wifi Conf</a>");
     content += FPSTR(legend_end);
-    content += F("<li>Setting Wifi");
+    //content += F("<li>Setting Wifi");
     if (status_sec == false){
     content += F("<li>Security: Fail");
     }
-    else {content += F("<li>Security: OK");}
+    else {content += F("<li>Security check: OK");}
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legendhref);
     content += F("hc2_conf'>HC2 Conf</a>");
     content += FPSTR(legend_end);
-    content += F("<li>Status : ");
-    content += SerialHC2;
+   /* content += F("<li>Status: ");
+    content += SerialHC2;*/
     content += F("<li>HC2 response :");
     content += noidung;
     content += FPSTR(_fieldset);
