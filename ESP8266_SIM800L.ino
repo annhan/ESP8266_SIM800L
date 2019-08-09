@@ -237,7 +237,7 @@ void loop() {
         da_kttk = false;
         noidung = "TK con ";
         noidung = noidung + String(sotien);
-        noidung = noidung + "d. Rep NAP:mathe. de nap tien";
+        noidung = noidung + "d. Rep NAP:mathe# de nap tien";
         guitinnhan = 1;
       }
     }

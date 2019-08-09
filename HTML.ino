@@ -181,7 +181,7 @@ void setupWiFiConf(void) {
   });
 
   server.on("/set_call", []() {
-    // noidung = server.arg("text");
+    noidung = server.arg("text");
     guitinnhan = 2;
     server.send(200, send_html, "OK");
   });
