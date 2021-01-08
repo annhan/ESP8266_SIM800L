@@ -624,7 +624,7 @@ void setupWeb(void) {
     content += FPSTR(legendhref);
     content += F("firmware'>Firmware</a>");
     content += FPSTR(legend_end);
-    content += F("<li>Status : V2.9 - 08/08/2019 NAP:Mathe#");
+    content += F("<li>Status : V2.9 - 08/08/2019 NAP:Mathe# NXS:10/1/2021");
     content += FPSTR(_fieldset);
     content += FPSTR(fieldset);
     content += FPSTR(legendhref);
