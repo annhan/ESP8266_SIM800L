@@ -1,5 +1,6 @@
 #include "Khaibao.h"
 #include "Define.h"
+#include "BienS.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
@@ -22,7 +23,7 @@ void receive_uart();
 void init_SIM900A();
 int sendAT(char* ATcommand, char* expected_answer, unsigned int timeout);
 void power_on();
-void send_SMS(String noidungsms = "",byte khancap=0);
+void send_SMS(char* noidungsms,byte khancap=0);
 void kttk(String nd);
 int limit_connect = 0;
 void blink_led(int thoigian) {
@@ -34,24 +35,6 @@ void blink_led(int thoigian) {
   delay(thoigian);
   digitalWrite(status_led, LOW);
 }
-/*void eventWiFi(WiFiEvent_t event) {
-     
-  switch(event) {
-    case WIFI_EVENT_STAMODE_CONNECTED:
-        digitalWrite(status_led, LOW);
-          statusmang = 1;
-          cho = 0;
-          limit_connect = 0;
-        Serial.println("WIFI_EVENT_STAMODE_CONNECTED");
-    break;
-        
-    case WIFI_EVENT_STAMODE_DISCONNECTED:
-          statusmang = 0;
-    Serial.println("WIFI_EVENT_STAMODE_DISCONNECTED");
-         break;
-  }
-  
-}*/
 void setup() {
   //wdt_disable();
   pinMode(PIN_CONFIG, INPUT);
@@ -69,23 +52,6 @@ void setup() {
   else {
     blink_led(1000);
   }
-  //**********************************
-  // IN OUT ///
-  //* *******************************
- /*if ( digitalRead(MODE_INOUT) == LOW ) {
-    delay(1500);
-    if ( digitalRead(MODE_INOUT) == LOW ) {
-      config_status = 1;
-      Mode_INOUT = true;
-      pinMode(IN1, INPUT);
-      pinMode(IN2, INPUT);
-      pinMode(IN3, INPUT);
-      pinMode(OUT1, OUTPUT);
-      guisms[0] = (digitalRead(IN1) == 0) ? 0 : 1 ;
-      guisms[1] = (digitalRead(IN2) == 0) ? 0 : 1 ;
-      guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
-    }
-  }*/
   //**********************************
   EEPROM.begin(1024);
   delay(10);
@@ -135,13 +101,6 @@ void setup() {
 #endif
   timeled = millis();
   timer_gio = timeled;
-/*#ifdef OUT_CC || INT_SENS
-  guisms[0] = (digitalRead(IN1) == 0) ? 0 : 1 ;
-  guisms[1] = (digitalRead(IN2) == 0) ? 0 : 1 ;
-  guisms[2] = (digitalRead(IN3) == 0) ? 0 : 1 ;
-#endif*/
-noidung="";
-
 if (atoi(WiFiConf.sta_security) == 6){status_sec = true;}
 }
 void loop() {
@@ -162,18 +121,6 @@ void loop() {
     }
   }
 #endif
-/*if (Mode_INOUT){
-  if (digitalRead(IN1) == 0){ delay(100); if (digitalRead(IN1) == 0){if (guisms[0] == 1){ status_relay=1;noidung = "Cua Xuong Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[0]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
-  //else if (digitalRead(IN1) == 1){ delay(100); if (digitalRead(IN1) == 1){if(guisms[0] == 0){ status_relay=1;noidung = "Cua Xuong Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[0]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
-
-  if (digitalRead(IN2) == 0){ delay(100); if (digitalRead(IN2) == 0){if (guisms[1] == 1){ status_relay=1;noidung = "Cua Xuong 1 Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[1]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
- // else if (digitalRead(IN2) == 1){ delay(100); if (digitalRead(IN2) == 1){if(guisms[1] == 0){ status_relay=1;noidung = "Cua Xuong 1 Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[1]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
-
-  if (digitalRead(IN3) == 0){ delay(100); if (digitalRead(IN3) == 0){if (guisms[2] == 1){ status_relay=1;noidung = "Cua Xuong 2 Dong";timer_reset_relay=millis(); guitinnhan=1;guisms[2]=0;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
- // else if (digitalRead(IN3) == 1){ delay(100); if (digitalRead(IN3) == 1){if(guisms[2] == 0){ status_relay=1;noidung = "Cua Xuong 2 Mo";timer_reset_relay=millis(); guitinnhan=1;guisms[2]=1;digitalWrite(OUT1, HIGH);digitalWrite(status_led, HIGH);}}}
-
-  if (status_relay ==1){if ( (unsigned long) (millis() - timer_reset_relay) > 30000 ){digitalWrite(OUT1, LOW);digitalWrite(status_led, LOW);status_relay=0;}}
-}*/
 #ifdef USING_SIM
   receive_uart();
   switch (guitinnhan) {
@@ -235,9 +182,7 @@ void loop() {
     if (da_kttk) {
       if (sotien < 15000 && sotien > 1000) {
         da_kttk = false;
-        noidung = "TK con ";
-        noidung = noidung + String(sotien);
-        noidung = noidung + "d. Rep NAP:mathe# de nap tien";
+        sprintf(noidung,"TK con %s . Rep NAP:mathe# de nap tien" , sotien);
         guitinnhan = 1;
       }
     }

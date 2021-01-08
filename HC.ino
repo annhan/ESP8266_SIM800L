@@ -302,14 +302,18 @@ void getHC() {
   }
 }
 bool processJson(char* message) {
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(message);
-  if (!root.success()) {return false;} 
-  if (root.containsKey("value")) { 
-    noidung = root["value"].as<String>();
-    return true;
+  DynamicJsonDocument jsonBuffer(200);
+  DeserializationError error = deserializeJson(jsonBuffer, message);
+  bool trave = false;
+  //JsonObject& root = jsonBuffer.parseObject(message);
+  if (error) {return false;} 
+  if (jsonBuffer.containsKey("value")) { 
+    strlcpy(noidung, jsonBuffer["value"],sizeof(noidung));
+    //noidung = jsonBuffer["value"].as<String>();
+    trave =  true;
   }
-  return false;
+  jsonBuffer.clear();
+  return trave;
 }
 void getvariable_tosendSMS() {
       WiFiClient client;

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Setting</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="2.css">
+</head>
+
+<body>
+    <h1>MQTT Setting</h1>
+    <form method="post" action="set_mqtt_conf">
+        <div class="row">
+            <label for="ServerMQTT">ServerMQTT:<span class="req"></span></label>
+            <input type="text" name="ServerMQTT" class="txt" value="%ServerMQTT%">
+        </div>
+        <div class="row">
+                <label for="PortMQTT">PortMQTT:<span class="req"></span></label>
+                <input type="text" name="PortMQTT" class="txt" value="%PortMQTT%">
+        </div>
+        <div class="row"><label for="USERMQTT">USERMQTT:<span class="req"></span></label>
+                    <input type="text" name="USERMQTT" class="txt" value="%USERMQTT%">
+        </div>
+        <div class="row"><label for="PASSMQTT">PASSMQTT:<span class="req"></span></label>
+                        <input type="password" name="PASSMQTT" type='password' class="txt" value="%PASSMQTT%">
+        </div>
+		 <div class="row"><label for="SUBTopic1">SUB Topic 1:<span class="req"></span></label>
+                    <input type="text" name="SUBTopic1" class="txt" value="%SUBTopic1%">
+         </div>
+         <input type="submit" id="submitbtn" name="submitbtn" tabindex="5" value="Send">
+
+    </form>
+    <p></p>
+</body>
+
+</html>

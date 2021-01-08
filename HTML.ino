@@ -163,7 +163,8 @@ void setupWiFiConf(void) {
     server.send(200, send_html, content);
   });
   server.on("/set_noidung", []() {
-    noidung = server.arg("text");
+    server.arg("text").toCharArray(noidung, sizeof(noidung));
+    //noidung = server.arg("text");
     guitinnhan = 1;
     server.send(200, send_html, "ok");
   });
@@ -181,7 +182,7 @@ void setupWiFiConf(void) {
   });
 
   server.on("/set_call", []() {
-    noidung = server.arg("text");
+    server.arg("text").toCharArray(noidung, sizeof(noidung));
     guitinnhan = 2;
     server.send(200, send_html, "OK");
   });
@@ -203,7 +204,8 @@ void setupWiFiConf(void) {
 #endif
   ///////////////////////
   server.on("/set_ktk", []() {
-    noidung = server.arg("text");
+    server.arg("text").toCharArray(noidung, sizeof(noidung));
+    //noidung = server.arg("text");
     guitinnhan = 3;
     server.send(200, send_html, "ok");
   });
@@ -212,14 +214,16 @@ void setupWiFiConf(void) {
     server.send(200, send_html, "ok");
   });
   server.on("/set_noidung1", []() {
-    noidung = server.arg("text");
+    //noidung = server.arg("text");
+    server.arg("text").toCharArray(noidung, sizeof(noidung));
     String new_phone = server.arg("newphone");
     new_phone.toCharArray(sdt_new, sizeof(sdt_new));
     guitinnhan = 7;
     server.send(200, send_html, "OK");
   });
   server.on("/set_smsnew", []() {
-    noidung = server.arg("s");
+    //noidung = server.arg("s");
+    server.arg("s").toCharArray(noidung, sizeof(noidung));
     String new_SDT1 = server.arg("1");
     String new_SDT2 = server.arg("2");
     String new_SDT3 = server.arg("3");
