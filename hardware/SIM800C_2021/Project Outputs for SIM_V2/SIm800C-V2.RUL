@@ -1,0 +1,12 @@
+DRC Rules Export File for PCB: F:\Arduino\Github\ESP8266_SIM800L\hardware\SIM800C_2021\SIm800C-V2.PcbDoc
+RuleKind=Clearance|RuleName=Clearance_5|Scope=Board|Minimum=20.00
+RuleKind=Clearance|RuleName=Clearance_4|Scope=Board|Minimum=10.00
+RuleKind=Clearance|RuleName=Clearance_3|Scope=Board|Minimum=10.00
+RuleKind=Clearance|RuleName=Polygon Top|Scope=Board|Minimum=20.00
+RuleKind=Clearance|RuleName=Polygon Angten|Scope=Board|Minimum=20.00
+RuleKind=Clearance|RuleName=Clearance_2|Scope=Board|Minimum=19.69
+RuleKind=Clearance|RuleName=Clearance_1|Scope=Board|Minimum=19.69
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=10.00
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=10.00
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0

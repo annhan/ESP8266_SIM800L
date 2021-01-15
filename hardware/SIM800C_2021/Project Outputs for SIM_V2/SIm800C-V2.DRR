@@ -1,0 +1,27 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: SIm800C-V2.PcbDoc   1/15/2021  4:08:27 PM
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : SIm800C-V2-RoundHoles.TXT
+ASCII SlotHoles File : SIm800C-V2-SlotHoles.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      15mil (0.381mm)                                           Round             72        PTH        0.00inch (0.00mm)
+T2      28mil (0.711mm)                                           Round             104       PTH        0.00inch (0.00mm)
+T3      32mil (0.8mm)                                             Round             8         PTH        0.00inch (0.00mm)
+T4      35mil (0.899mm)                                           Round             6         PTH        0.00inch (0.00mm)
+T5      36mil (0.914mm)                                           Round             2         PTH        0.00inch (0.00mm)
+T6      40mil (1.016mm)                                           Round             14        PTH        0.00inch (0.00mm)
+T7      40mil (1.021mm)                                           Round             4         PTH        0.00inch (0.00mm)
+T8      43mil (1.1mm)                                             Round             4         PTH        0.00inch (0.00mm)
+T9      45mil (1.143mm)                                           Round             5         PTH        0.00inch (0.00mm)
+T10     47mil (1.199mm)                                           Round             6         PTH        0.00inch (0.00mm)
+T11     50mil (1.27mm)                                            Slot              3         PTH        0.00inch (0.00mm)
+T12     51mil (1.3mm)                                             Round             2         PTH        0.00inch (0.00mm)
+T13     60mil (1.524mm)                                           Round             4         PTH        0.00inch (0.00mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              234
+
+Total Processing Time (hh:mm:ss) : 00:00:00

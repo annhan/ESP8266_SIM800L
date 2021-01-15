@@ -1,0 +1,26 @@
+Removed Pin From Net: NetName=SGND Pin=C7-1
+Removed Member From Class: ClassName=SIM Member=C7
+Removed Member From Class: ClassName=MCU Member=R100
+Change Component Footprint: Designator=1 Old Footprint=RES-SMD-1206 New Footprint=RES-SMD-0603
+Change Component Footprint: Designator=2 Old Footprint=RES-SMD-1206 New Footprint=RES-SMD-0603
+Change Component Footprint: Designator=3 Old Footprint=RES-SMD-1206 New Footprint=RES-SMD-0603
+Change Component Footprint: Designator=7 Old Footprint=RES-SMD-1206 New Footprint=RES-SMD-0603
+Change Component Footprint: Designator=6 Old Footprint=RES-SMD-1206 New Footprint=RES-SMD-0805
+Added Component: Designator=Cx11(CN-SMD-1206)
+Add component (AddParameter): Name = "Value"; Value = "33pF"; VariantName = "[No Variations]"
+Added Component: Designator=Cx12(CN-SMD-1206)
+Add component (AddParameter): Name = "Value"; Value = "33pF"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=Cx9-1
+Added Pin To Net: NetName=SGND Pin=Cx11-2
+Added Pin To Net: NetName=SVCC Pin=Cx12-1
+Added Pin To Net: NetName=SGND Pin=Cx12-2
+Added Pin To Net: NetName=NetCx11_1 Pin=Cx11-1
+Added Pin To Net: NetName=NetCx11_1 Pin=F1-1
+Added Pin To Net: NetName=NetCx11_1 Pin=J1-2
+Added Net: Name=NetCx11_1
+Added Member To Class: ClassName=Power Member=Component C5 2200uF
+Added Member To Class: ClassName=MCU Member=Component Cx8 100nF
+Added Member To Class: ClassName=MCU Member=Component Cx9 10uF
+Added Member To Class: ClassName=SIM Member=Component Cx11 103
+Added Member To Class: ClassName=SIM Member=Component Cx12 103
+Added Member To Class: ClassName=MCU Member=Component R10 10k

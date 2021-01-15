@@ -1,0 +1,11 @@
+Added Component: Designator=Cx?(CN-SMD-0805)
+Add component (AddParameter): Name = "Value"; Value = "33pF"; VariantName = "[No Variations]"
+Added Component: Designator=Cx?(CN-SMD-0805)
+Add component (AddParameter): Name = "Value"; Value = "33pF"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=Cx?-1
+Added Pin To Net: NetName=GND Pin=Cx?-1
+Added Pin To Net: NetName=NetC1_1 Pin=Cx?-2
+Added Pin To Net: NetName=V_ESP Pin=Cx?-2
+Added Member To Class: ClassName=Power Member=Component Cx? 1uF
+Added Member To Class: ClassName=Power Member=Component Cx? 1uF
+Added Member To Class: ClassName=Power Member=Component U? LM

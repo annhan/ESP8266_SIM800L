@@ -1,0 +1,7 @@
+Added Component: Designator=Soc?(microSIM)
+Added Pin To Net: NetName=SIMVCC Pin=Soc?-1
+Added Pin To Net: NetName=Net1_2 Pin=Soc?-2
+Added Pin To Net: NetName=Net2_2 Pin=Soc?-3
+Added Pin To Net: NetName=SGND Pin=Soc?-5
+Added Pin To Net: NetName=Net3_2 Pin=Soc?-7
+Added Member To Class: ClassName=SIM Member=Component Soc? MicroSIM

@@ -1,0 +1,9 @@
+Added Component: Designator=U?(SOT223)
+Add component (AddParameter): Name = "Creator"; Value = "Nguyen Ba Bien"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Website"; Value = "http://group3i.net"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=U?-1
+Added Pin To Net: NetName=V_ESP Pin=U?-2
+Added Pin To Net: NetName=NetC1_1 Pin=U?-3
+Added Pin To Net: NetName=V_ESP Pin=U?-4
+Added Member To Class: ClassName=Power Member=Component U? LM1117-3.3V
+Added Member To Class: ClassName=Power Member=Component U? LM

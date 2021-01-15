@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=SIMVCC Pin=Soc2-1
+Removed Pin From Net: NetName=Net1_2 Pin=Soc2-2
+Removed Pin From Net: NetName=Net2_2 Pin=Soc2-3
+Removed Pin From Net: NetName=SGND Pin=Soc2-5
+Removed Pin From Net: NetName=Net3_2 Pin=Soc2-7
+Removed Member From Class: ClassName=SIM Member=Soc2
+Added Component: Designator=Soc?(microSIM)
+Added Pin To Net: NetName=SIMVCC Pin=Soc?-1
+Added Pin To Net: NetName=Net1_2 Pin=Soc?-2
+Added Pin To Net: NetName=Net2_2 Pin=Soc?-3
+Added Pin To Net: NetName=SGND Pin=Soc?-5
+Added Pin To Net: NetName=Net3_2 Pin=Soc?-7
+Added Pin To Net: NetName=CD Pin=U2-14
+Added Net: Name=CD
+Added Member To Class: ClassName=SIM Member=Component Soc? MicroSIM

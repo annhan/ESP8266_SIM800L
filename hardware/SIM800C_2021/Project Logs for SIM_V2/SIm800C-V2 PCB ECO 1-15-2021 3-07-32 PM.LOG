@@ -1,0 +1,7 @@
+Change Component Designator: OldDesignator=Cx? NewDesignator=Cx11
+Change Component Designator: OldDesignator=Cx? NewDesignator=Cx12
+Change Component Designator: OldDesignator=Soc? NewDesignator=Soc2
+Change Component Designator: OldDesignator=U? NewDesignator=U1
+Change Component Designator: OldDesignator=U? NewDesignator=U3
+Added Member To Class: ClassName=Power Member=Component Cx12 1uF
+Added Member To Class: ClassName=Power Member=Component U3 LM1117-3.3V
